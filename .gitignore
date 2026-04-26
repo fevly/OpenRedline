@@ -9,3 +9,8 @@ data/
 .office-addin-dev-certs/
 
 npm-debug.log*
+
+# Large generated originals kept locally, not needed for distribution.
+assets/openredline-logo.png
+docs/assets/openredline-logo.png
+docs/assets/openredline-logo-256.png
