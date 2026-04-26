@@ -67,6 +67,7 @@ const els = {
   addModel: document.querySelector('#addModel'),
   modelList: document.querySelector('#modelList'),
   normalizeChinese: document.querySelector('#normalizeChinese'),
+  settingsPanel: document.querySelector('.settingsPanel'),
   runCompare: document.querySelector('#runCompare'),
   results: document.querySelector('#results'),
   resultTemplate: document.querySelector('#resultTemplate')
@@ -186,6 +187,7 @@ function bindEvents() {
   els.modelList.addEventListener('change', updateModelFromEvent);
   els.modelList.addEventListener('click', handleModelClick);
   els.normalizeChinese.addEventListener('change', saveTextOptions);
+  els.settingsPanel.addEventListener('click', handleSettingsClick);
   els.runCompare.addEventListener('click', runComparison);
 }
 
@@ -197,6 +199,21 @@ function saveTextOptions() {
   state.normalizeChinese = els.normalizeChinese.checked;
   localStorage.setItem('word-ai-reviser.normalizeChinese', JSON.stringify(state.normalizeChinese));
   setStatus(state.normalizeChinese ? '插入前会规范为中文全角标点。' : '已关闭中文标点规范化。');
+}
+
+function handleSettingsClick(event) {
+  const url = event.target.dataset.openUrl;
+  if (!url) return;
+  openExternalUrl(url);
+}
+
+function openExternalUrl(url) {
+  const targetUrl = url.startsWith('http') ? url : new URL(url, location.origin).href;
+  if (globalThis.Office?.context?.ui?.openBrowserWindow) {
+    Office.context.ui.openBrowserWindow(targetUrl);
+    return;
+  }
+  window.open(targetUrl, '_blank', 'noopener,noreferrer');
 }
 
 function renderPrompts() {

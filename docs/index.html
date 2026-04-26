@@ -14,7 +14,7 @@
         <div>
           <a href="#install">安装</a>
           <a href="#publish">分发</a>
-          <a href="https://github.com/YOUR_GITHUB_USERNAME/word-ai-reviser">GitHub</a>
+          <a href="https://github.com/fevly/openredline">GitHub</a>
         </div>
       </nav>
       <div class="heroGrid">
@@ -26,8 +26,10 @@
             和模型配置生成多个版本，人工比较后再替换回文档。
           </p>
           <div class="actions">
-            <a class="primary" href="#install">开始试用</a>
+            <a class="primary" href="https://localhost:3000/src/taskpane.html">打开插件</a>
+            <a class="secondary" href="https://localhost:3000/api/health">检查后端</a>
             <a class="secondary" href="./manifest.local.xml" download>下载本地 manifest</a>
+            <a class="secondary" href="https://github.com/fevly/openredline">查看源码</a>
           </div>
         </section>
         <aside class="preview" aria-label="插件界面预览">
@@ -62,11 +64,13 @@
             <h3>启动本地服务</h3>
             <pre><code>npm run certs
 npm run dev</code></pre>
+            <p><a class="inlineButton" href="https://localhost:3000/api/health">检查后端是否运行</a></p>
           </article>
           <article>
             <span>3</span>
             <h3>在 Word 加载</h3>
             <p>下载 manifest 后，在 Word 中侧载加载项。任务窗格会连接到本机的 HTTPS 服务。</p>
+            <p><a class="inlineButton" href="https://localhost:3000/src/taskpane.html">打开本地任务窗格</a></p>
           </article>
         </div>
       </section>

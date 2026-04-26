@@ -110,7 +110,8 @@ h2 {
 }
 
 .primary,
-.secondary {
+.secondary,
+.inlineButton {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
@@ -127,6 +128,13 @@ h2 {
 .secondary {
   border: 1px solid var(--line);
   background: #fff;
+}
+
+.inlineButton {
+  min-height: 36px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 14px;
 }
 
 .preview {
