@@ -1,0 +1,225 @@
+:root {
+  color-scheme: light;
+  --ink: #1f2937;
+  --muted: #667085;
+  --line: #d0d5dd;
+  --bg: #f7f7f4;
+  --panel: #ffffff;
+  --accent: #0f766e;
+  --accent-ink: #ffffff;
+  --danger: #b42318;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button,
+select,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  min-height: 32px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.secondaryButton,
+.ghostButton {
+  border-color: var(--line);
+  background: #fff;
+  color: var(--ink);
+}
+
+.dangerButton {
+  border-color: #fecdca;
+  background: #fff;
+  color: var(--danger);
+}
+
+textarea,
+input,
+select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink);
+  padding: 8px 10px;
+}
+
+textarea {
+  resize: vertical;
+}
+
+.shell {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.topbar p {
+  margin: 2px 0 0;
+  color: var(--muted);
+}
+
+.iconButton {
+  width: 36px;
+  padding: 0;
+  font-size: 18px;
+}
+
+.panel,
+.resultCard {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 12px;
+}
+
+.rowTitle,
+.resultHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.inlineActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.inlineActions button {
+  min-height: 30px;
+  padding: 0 10px;
+}
+
+body.wordHost .configOnly {
+  display: none !important;
+}
+
+.rowTitle span,
+label {
+  font-weight: 650;
+}
+
+.compactTitle {
+  margin-top: 2px;
+}
+
+.modelList {
+  display: grid;
+  gap: 8px;
+}
+
+.modelOption {
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fcfcfd;
+}
+
+.compactModelOption {
+  padding: 9px 10px;
+}
+
+.modelOptionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.modelEnable {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  align-items: center;
+  font-weight: 650;
+}
+
+.modelEnable input {
+  width: auto;
+}
+
+body.wordHost .modelEnable {
+  min-height: 26px;
+}
+
+.modelActions {
+  display: flex;
+  gap: 6px;
+}
+
+.modelGrid {
+  display: grid;
+  gap: 8px;
+}
+
+.field {
+  display: grid;
+  gap: 4px;
+}
+
+.field span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.modelOption small {
+  display: block;
+  color: var(--muted);
+}
+
+.results {
+  display: grid;
+  gap: 12px;
+}
+
+.resultCard[data-state="error"] {
+  border-color: var(--danger);
+}
+
+.resultCard[data-state="error"] textarea {
+  color: var(--danger);
+}

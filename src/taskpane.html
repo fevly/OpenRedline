@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI 文本修订</title>
+    <link rel="stylesheet" href="./taskpane.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <h1>AI 文本修订</h1>
+          <p id="status">选择 Word 文本后读取。</p>
+        </div>
+        <button id="loadSelection" class="iconButton" title="读取选中文本" aria-label="读取选中文本">↻</button>
+      </header>
+
+      <section class="panel">
+        <label for="selectedText">选中文本</label>
+        <textarea id="selectedText" rows="7" placeholder="从 Word 读取选中的文字，也可以在这里手动粘贴。"></textarea>
+      </section>
+
+      <section class="panel">
+        <div class="rowTitle">
+          <label for="promptSelect">修订 Prompt</label>
+          <div class="inlineActions configOnly">
+            <button id="addPrompt" class="secondaryButton" title="新增 Prompt">新增</button>
+            <button id="savePrompt" title="保存当前 Prompt">保存</button>
+            <button id="deletePrompt" class="dangerButton" title="删除当前 Prompt">删除</button>
+          </div>
+        </div>
+        <select id="promptSelect"></select>
+        <input id="promptName" class="configOnly" type="text" placeholder="自定义 Prompt 名称" />
+        <textarea id="promptText" class="configOnly" rows="6"></textarea>
+      </section>
+
+      <section class="panel">
+        <div class="rowTitle">
+          <span>参与比较的 AI</span>
+          <button id="runCompare">生成比较</button>
+        </div>
+        <div class="rowTitle compactTitle">
+          <span>模型</span>
+          <button id="addModel" class="secondaryButton configOnly">新增</button>
+        </div>
+        <div id="modelList" class="modelList"></div>
+      </section>
+
+      <section class="results" id="results"></section>
+    </main>
+
+    <template id="resultTemplate">
+      <article class="resultCard">
+        <div class="resultHeader">
+          <strong></strong>
+          <button class="insertButton">插入</button>
+        </div>
+        <textarea rows="8"></textarea>
+      </article>
+    </template>
+
+    <script type="module" src="./app.js?v=20260427-compact-word"></script>
+  </body>
+</html>

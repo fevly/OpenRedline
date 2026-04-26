@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+  Production template.
+  Replace https://YOUR_DOMAIN with the HTTPS domain where this add-in is deployed.
+  GitHub Pages can host a docs site, but the current app also needs a backend for
+  /api/settings and /api/revise. For real distribution, deploy server.js or an
+  equivalent backend to a trusted HTTPS host.
+-->
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+  xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
+  xsi:type="TaskPaneApp">
+  <Id>7f5c9f74-26f6-47c8-8c73-4db5d44c8f29</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>Word AI Reviser</ProviderName>
+  <DefaultLocale>zh-CN</DefaultLocale>
+  <DisplayName DefaultValue="AI 文本修订"/>
+  <Description DefaultValue="在 Word 中用多个 AI 和自定义 Prompt 修订选中文本。"/>
+  <IconUrl DefaultValue="https://YOUR_DOMAIN/assets/icon-32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://YOUR_DOMAIN/assets/icon-64.png"/>
+  <SupportUrl DefaultValue="https://YOUR_DOMAIN"/>
+  <AppDomains>
+    <AppDomain>https://YOUR_DOMAIN</AppDomain>
+  </AppDomains>
+  <Hosts>
+    <Host Name="Document"/>
+  </Hosts>
+  <DefaultSettings>
+    <SourceLocation DefaultValue="https://YOUR_DOMAIN/src/taskpane.html"/>
+  </DefaultSettings>
+  <Permissions>ReadWriteDocument</Permissions>
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
+    <Hosts>
+      <Host xsi:type="Document">
+        <DesktopFormFactor>
+          <GetStarted>
+            <Title resid="GetStarted.Title"/>
+            <Description resid="GetStarted.Description"/>
+            <LearnMoreUrl resid="GetStarted.LearnMoreUrl"/>
+          </GetStarted>
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
+            <OfficeTab id="TabHome">
+              <Group id="CommandsGroup">
+                <Label resid="CommandsGroup.Label"/>
+                <Icon>
+                  <bt:Image size="16" resid="Icon.16x16"/>
+                  <bt:Image size="32" resid="Icon.32x32"/>
+                  <bt:Image size="80" resid="Icon.80x80"/>
+                </Icon>
+                <Control xsi:type="Button" id="TaskpaneButton">
+                  <Label resid="TaskpaneButton.Label"/>
+                  <Supertip>
+                    <Title resid="TaskpaneButton.Label"/>
+                    <Description resid="TaskpaneButton.Tooltip"/>
+                  </Supertip>
+                  <Icon>
+                    <bt:Image size="16" resid="Icon.16x16"/>
+                    <bt:Image size="32" resid="Icon.32x32"/>
+                    <bt:Image size="80" resid="Icon.80x80"/>
+                  </Icon>
+                  <Action xsi:type="ShowTaskpane">
+                    <TaskpaneId>ButtonId1</TaskpaneId>
+                    <SourceLocation resid="Taskpane.Url"/>
+                  </Action>
+                </Control>
+              </Group>
+            </OfficeTab>
+          </ExtensionPoint>
+        </DesktopFormFactor>
+      </Host>
+    </Hosts>
+    <Resources>
+      <bt:Images>
+        <bt:Image id="Icon.16x16" DefaultValue="https://YOUR_DOMAIN/assets/icon-16.png"/>
+        <bt:Image id="Icon.32x32" DefaultValue="https://YOUR_DOMAIN/assets/icon-32.png"/>
+        <bt:Image id="Icon.80x80" DefaultValue="https://YOUR_DOMAIN/assets/icon-80.png"/>
+      </bt:Images>
+      <bt:Urls>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://YOUR_DOMAIN/src/taskpane.html"/>
+        <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://YOUR_DOMAIN"/>
+      </bt:Urls>
+      <bt:ShortStrings>
+        <bt:String id="GetStarted.Title" DefaultValue="AI 文本修订已加载"/>
+        <bt:String id="CommandsGroup.Label" DefaultValue="AI 修订"/>
+        <bt:String id="TaskpaneButton.Label" DefaultValue="AI 修订"/>
+      </bt:ShortStrings>
+      <bt:LongStrings>
+        <bt:String id="GetStarted.Description" DefaultValue="选择一段文字，打开任务窗格，选择 Prompt 和 AI 模型进行比较。"/>
+        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="打开 AI 文本修订任务窗格。"/>
+      </bt:LongStrings>
+    </Resources>
+  </VersionOverrides>
+</OfficeApp>
