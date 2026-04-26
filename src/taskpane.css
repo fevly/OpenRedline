@@ -109,10 +109,10 @@ textarea {
   color: var(--muted);
 }
 
-.iconButton {
-  width: 36px;
-  padding: 0;
-  font-size: 18px;
+.selectionButton {
+  min-width: 80px;
+  padding: 0 12px;
+  white-space: nowrap;
 }
 
 .panel,
