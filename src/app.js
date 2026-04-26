@@ -1,15 +1,19 @@
 const defaultPrompts = [
   {
     name: '纠错',
-    text: '请修正错别字、病句、标点和明显语法问题，尽量保留原文意思、术语和行文风格。'
+    text: '请对输入文本进行校对和纠错，修正错别字、病句、语序不顺、重复表达和明显标点问题。请尽量保留原意、术语、人名、地名、数字和原有行文风格，不新增未经原文支持的信息。只输出修订后的文本，不要输出解释、分析或修改清单。'
   },
   {
     name: '学术改写',
-    text: '请将文本改写为更自然、严谨、适合学术写作的中文，保留原意，不添加未经原文支持的信息。'
+    text: '请将输入文本改写为更自然、严谨、适合学术写作的中文。请优化句式、逻辑衔接和段内表达，使其更符合中文论文或研究报告的表达规范。必须保留原意、关键信息、术语和论证边界，不添加原文没有的事实、案例或判断。只输出改写后的文本，不要输出解释、分析或修改清单。'
   },
   {
-    name: '精简',
-    text: '请压缩冗余表达，让文本更简洁有力，同时保留关键概念、论证关系和专有名词。'
+    name: '中译英',
+    text: 'Please translate the input Chinese text into clear, natural, and polished English. Preserve the original meaning, argument structure, terminology, names, dates, numbers, and citations. Use an academic or professional register when appropriate, but do not add information that is not present in the source text. Output only the final English translation, with no explanations, notes, or revision list.'
+  },
+  {
+    name: '英译中',
+    text: '请将输入英文翻译为自然、准确、正式的中文。请保留原文含义、论证结构、术语、人名、地名、日期、数字和引文信息，不新增原文没有的信息。中文表达应流畅、符合中文学术或专业写作习惯，并使用中文全角标点。只输出最终中文译文，不要输出解释、注释或修改清单。'
   }
 ];
 
