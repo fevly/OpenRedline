@@ -7,7 +7,7 @@
 ## 功能
 
 - 读取当前 Word 选中文本
-- 内置纠错、学术改写、精简 Prompt
+- 内置纠错、学术改写、中译英、英译中 Prompt
 - 可新增、删除、自定义 Prompt，并同步到本地共享配置
 - 可新增、删除、保存多组 AI 配置，包括 Provider、API 端点、模型名称和可选 API Key
 - 可同时调用 OpenAI 兼容接口、Anthropic、Gemini
@@ -28,7 +28,7 @@
 ## 本地运行
 
 ```bash
-cd word-ai-reviser
+cd openredline
 npm install
 cp .env.example .env
 npm run certs
@@ -45,7 +45,7 @@ npm run dev
 
 ## 发布到 GitHub
 
-1. 在 GitHub 新建仓库，例如 `word-ai-reviser`。
+1. 在 GitHub 新建仓库，例如 `openredline`。
 2. 在本地初始化并提交：
 
 ```bash
@@ -53,12 +53,12 @@ git init
 git add .
 git commit -m "Initial Word AI Reviser prototype"
 git branch -M main
-git remote add origin https://github.com/YOUR_GITHUB_USERNAME/word-ai-reviser.git
+git remote add origin https://github.com/fevly/openredline.git
 git push -u origin main
 ```
 
 3. 在仓库 Settings -> Pages 中选择 `Deploy from a branch`，分支选择 `main`，目录选择 `/docs`。
-4. Pages 发布后，把 `docs/index.html` 里的 `YOUR_GITHUB_USERNAME` 替换为你的 GitHub 用户名，再提交一次。
+4. Pages 发布后，项目首页会出现在 GitHub 提供的 Pages 地址。
 
 发布页里的 `docs/manifest.local.xml` 仍然指向 `https://localhost:3000`，适合让测试者下载后在本机运行插件。若要让别人不用本地启动服务，需要部署后端，并按 `manifest.production.example.xml` 生成线上 manifest。
 
