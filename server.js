@@ -13,6 +13,7 @@ const port = Number(process.env.PORT || 3000);
 const settingsPath = path.join(__dirname, 'data', 'settings.json');
 
 app.use(express.json({ limit: '1mb' }));
+app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 app.get('/assets/icon-:size.png', (req, res) => {
   const size = Number(req.params.size) || 32;

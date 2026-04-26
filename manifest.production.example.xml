@@ -15,7 +15,7 @@
   <Version>1.0.0.0</Version>
   <ProviderName>Word AI Reviser</ProviderName>
   <DefaultLocale>zh-CN</DefaultLocale>
-  <DisplayName DefaultValue="AI 文本修订"/>
+  <DisplayName DefaultValue="OpenRedline"/>
   <Description DefaultValue="在 Word 中用多个 AI 和自定义 Prompt 修订选中文本。"/>
   <IconUrl DefaultValue="https://YOUR_DOMAIN/assets/icon-32.png"/>
   <HighResolutionIconUrl DefaultValue="https://YOUR_DOMAIN/assets/icon-64.png"/>
@@ -81,9 +81,9 @@
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://YOUR_DOMAIN"/>
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="GetStarted.Title" DefaultValue="AI 文本修订已加载"/>
-        <bt:String id="CommandsGroup.Label" DefaultValue="AI 修订"/>
-        <bt:String id="TaskpaneButton.Label" DefaultValue="AI 修订"/>
+        <bt:String id="GetStarted.Title" DefaultValue="OpenRedline 已加载"/>
+        <bt:String id="CommandsGroup.Label" DefaultValue="OpenRedline"/>
+        <bt:String id="TaskpaneButton.Label" DefaultValue="OpenRedline"/>
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="GetStarted.Description" DefaultValue="选择一段文字，打开任务窗格，选择 Prompt 和 AI 模型进行比较。"/>
