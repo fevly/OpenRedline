@@ -45,6 +45,10 @@
           <button id="addModel" class="secondaryButton configOnly">新增</button>
         </div>
         <div id="modelList" class="modelList"></div>
+        <label class="toggleRow" for="normalizeChinese">
+          <input id="normalizeChinese" type="checkbox" checked />
+          <span>插入前使用中文标点规范化</span>
+        </label>
       </section>
 
       <section class="results" id="results"></section>
@@ -54,12 +58,17 @@
       <article class="resultCard">
         <div class="resultHeader">
           <strong></strong>
-          <button class="insertButton">插入</button>
+          <div class="resultActions">
+            <button class="secondaryButton editButton" type="button">编辑</button>
+            <button class="secondaryButton previewButton" type="button">预览</button>
+            <button class="insertButton" type="button">插入</button>
+          </div>
         </div>
-        <textarea rows="8"></textarea>
+        <textarea class="markdownSource" rows="8"></textarea>
+        <div class="markdownPreview" hidden></div>
       </article>
     </template>
 
-    <script type="module" src="./app.js?v=20260427-compact-word"></script>
+    <script type="module" src="./app.js?v=20260427-markdown-normalize"></script>
   </body>
 </html>

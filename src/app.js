@@ -46,7 +46,8 @@ const defaultModelConfigs = [
 const state = {
   prompts: loadJson('word-ai-reviser.prompts', defaultPrompts),
   modelConfigs: normalizeModelConfigs(loadJson('word-ai-reviser.modelConfigs', defaultModelConfigs)),
-  selectedPromptIndex: 0
+  selectedPromptIndex: 0,
+  normalizeChinese: loadJson('word-ai-reviser.normalizeChinese', true)
 };
 
 const els = {
@@ -61,6 +62,7 @@ const els = {
   deletePrompt: document.querySelector('#deletePrompt'),
   addModel: document.querySelector('#addModel'),
   modelList: document.querySelector('#modelList'),
+  normalizeChinese: document.querySelector('#normalizeChinese'),
   runCompare: document.querySelector('#runCompare'),
   results: document.querySelector('#results'),
   resultTemplate: document.querySelector('#resultTemplate')
@@ -76,6 +78,7 @@ function initializeApp() {
   loadSharedSettings().finally(() => {
     renderPrompts();
     renderModels();
+    renderTextOptions();
     bindEvents();
     readSelection();
   });
@@ -178,7 +181,18 @@ function bindEvents() {
   els.modelList.addEventListener('input', updateModelFromEvent);
   els.modelList.addEventListener('change', updateModelFromEvent);
   els.modelList.addEventListener('click', handleModelClick);
+  els.normalizeChinese.addEventListener('change', saveTextOptions);
   els.runCompare.addEventListener('click', runComparison);
+}
+
+function renderTextOptions() {
+  els.normalizeChinese.checked = Boolean(state.normalizeChinese);
+}
+
+function saveTextOptions() {
+  state.normalizeChinese = els.normalizeChinese.checked;
+  localStorage.setItem('word-ai-reviser.normalizeChinese', JSON.stringify(state.normalizeChinese));
+  setStatus(state.normalizeChinese ? '插入前会规范为中文全角标点。' : '已关闭中文标点规范化。');
 }
 
 function renderPrompts() {
@@ -456,9 +470,13 @@ async function createRevision(item, text, prompt) {
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || response.statusText);
     card.textarea.value = data.output || '';
+    card.syncPreview();
+    card.showPreview();
   } catch (error) {
     card.root.dataset.state = 'error';
     card.textarea.value = error.message;
+    card.syncPreview();
+    card.showEditor();
   }
 }
 
@@ -467,14 +485,33 @@ function createResultCard(title, initialText) {
   const root = fragment.querySelector('.resultCard');
   const strong = fragment.querySelector('strong');
   const textarea = fragment.querySelector('textarea');
-  const button = fragment.querySelector('.insertButton');
+  const preview = fragment.querySelector('.markdownPreview');
+  const editButton = fragment.querySelector('.editButton');
+  const previewButton = fragment.querySelector('.previewButton');
+  const insertButton = fragment.querySelector('.insertButton');
 
   strong.textContent = title;
   textarea.value = initialText;
-  button.addEventListener('click', () => insertIntoWord(textarea.value));
+  const syncPreview = () => {
+    preview.innerHTML = renderMarkdown(textarea.value);
+  };
+  const showEditor = () => {
+    textarea.hidden = false;
+    preview.hidden = true;
+  };
+  const showPreview = () => {
+    syncPreview();
+    textarea.hidden = true;
+    preview.hidden = false;
+  };
+  textarea.addEventListener('input', syncPreview);
+  editButton.addEventListener('click', showEditor);
+  previewButton.addEventListener('click', showPreview);
+  insertButton.addEventListener('click', () => insertIntoWord(prepareTextForWord(textarea.value)));
+  syncPreview();
   els.results.append(fragment);
 
-  return { root, textarea };
+  return { root, textarea, preview, syncPreview, showEditor, showPreview };
 }
 
 async function insertIntoWord(text) {
@@ -486,10 +523,182 @@ async function insertIntoWord(text) {
       range.insertText(text, Word.InsertLocation.replace);
       await context.sync();
     });
-    setStatus('已替换当前选中文本。');
+    setStatus(state.normalizeChinese ? '已替换当前选中文本，并应用中文标点规范化。' : '已替换当前选中文本。');
   } catch (error) {
     setStatus(`插入失败：${error.message}`, true);
   }
+}
+
+function prepareTextForWord(markdownText) {
+  const protectedText = protectPlainTextSegments(markdownText);
+  const plainText = stripMarkdown(protectedText.text);
+  const normalizedText = state.normalizeChinese ? normalizeChineseText(plainText) : plainText;
+  return restorePlaceholders(normalizedText, protectedText.placeholders);
+}
+
+function renderMarkdown(source) {
+  const lines = String(source || '').replace(/\r\n?/g, '\n').split('\n');
+  const html = [];
+  let listType = '';
+  let inCode = false;
+  let codeLines = [];
+
+  const closeList = () => {
+    if (!listType) return;
+    html.push(`</${listType}>`);
+    listType = '';
+  };
+
+  for (const line of lines) {
+    if (/^```/.test(line.trim())) {
+      if (inCode) {
+        html.push(`<pre><code>${escapeHtml(codeLines.join('\n'))}</code></pre>`);
+        codeLines = [];
+        inCode = false;
+      } else {
+        closeList();
+        inCode = true;
+      }
+      continue;
+    }
+
+    if (inCode) {
+      codeLines.push(line);
+      continue;
+    }
+
+    if (!line.trim()) {
+      closeList();
+      continue;
+    }
+
+    const heading = line.match(/^(#{1,3})\s+(.+)$/);
+    if (heading) {
+      closeList();
+      const level = heading[1].length;
+      html.push(`<h${level}>${renderInlineMarkdown(heading[2])}</h${level}>`);
+      continue;
+    }
+
+    const quote = line.match(/^>\s?(.+)$/);
+    if (quote) {
+      closeList();
+      html.push(`<blockquote>${renderInlineMarkdown(quote[1])}</blockquote>`);
+      continue;
+    }
+
+    const unordered = line.match(/^\s*[-*]\s+(.+)$/);
+    const ordered = line.match(/^\s*\d+\.\s+(.+)$/);
+    if (unordered || ordered) {
+      const nextListType = unordered ? 'ul' : 'ol';
+      if (listType !== nextListType) {
+        closeList();
+        html.push(`<${nextListType}>`);
+        listType = nextListType;
+      }
+      html.push(`<li>${renderInlineMarkdown((unordered || ordered)[1])}</li>`);
+      continue;
+    }
+
+    closeList();
+    html.push(`<p>${renderInlineMarkdown(line)}</p>`);
+  }
+
+  if (inCode) html.push(`<pre><code>${escapeHtml(codeLines.join('\n'))}</code></pre>`);
+  closeList();
+  return html.join('');
+}
+
+function renderInlineMarkdown(source) {
+  let html = escapeHtml(source);
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+  html = html.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  html = html.replace(/_([^_]+)_/g, '<em>$1</em>');
+  return html;
+}
+
+function stripMarkdown(source) {
+  return String(source || '')
+    .replace(/\r\n?/g, '\n')
+    .replace(/```[a-zA-Z0-9_-]*\n?/g, '')
+    .replace(/```/g, '')
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/^\s{0,3}#{1,6}\s+/gm, '')
+    .replace(/^\s{0,3}>\s?/gm, '')
+    .replace(/^\s*[-*]\s+/gm, '')
+    .replace(/^\s*\d+\.\s+/gm, '')
+    .replace(/(\*\*|__)(.*?)\1/g, '$2')
+    .replace(/(\*|_)(.*?)\1/g, '$2')
+    .replace(/^\s*[-*_]{3,}\s*$/gm, '')
+    .trim();
+}
+
+function normalizeChineseText(source) {
+  let doubleQuoteOpen = true;
+  let singleQuoteOpen = true;
+  let text = String(source || '');
+
+  text = text
+    .replace(/\.{3}/g, '……')
+    .replace(/--/g, '——')
+    .replace(/,/g, '，')
+    .replace(/;/g, '；')
+    .replace(/:/g, '：')
+    .replace(/\?/g, '？')
+    .replace(/!/g, '！')
+    .replace(/\(/g, '（')
+    .replace(/\)/g, '）')
+    .replace(/\[/g, '【')
+    .replace(/\]/g, '】')
+    .replace(/"/g, () => {
+      const mark = doubleQuoteOpen ? '“' : '”';
+      doubleQuoteOpen = !doubleQuoteOpen;
+      return mark;
+    })
+    .replace(/'/g, () => {
+      const mark = singleQuoteOpen ? '‘' : '’';
+      singleQuoteOpen = !singleQuoteOpen;
+      return mark;
+    })
+    .replace(/\./g, (match, offset, whole) => (/\d/.test(whole[offset - 1]) && /\d/.test(whole[offset + 1]) ? match : '。'));
+  return text;
+}
+
+function protectPlainTextSegments(source) {
+  const placeholders = [];
+  const protect = (value) => {
+    const token = `\uE000${placeholders.length}\uE001`;
+    placeholders.push(value);
+    return token;
+  };
+  const text = String(source || '')
+    .replace(/```[a-zA-Z0-9_-]*\n?([\s\S]*?)```/g, (_match, code) => protect(code.trim()))
+    .replace(/`([^`]*)`/g, (_match, code) => protect(code))
+    .replace(/https?:\/\/[^\s，。；：“”‘’（）？！]+/g, (url) => protect(url))
+    .replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, (email) => protect(email));
+  return { text, placeholders };
+}
+
+function restorePlaceholders(source, placeholders) {
+  let text = source;
+  placeholders.forEach((value, index) => {
+    text = text.replace(`\uE000${index}\uE001`, value);
+  });
+  return text;
+}
+
+function escapeHtml(source) {
+  return String(source || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function getSelectedModels() {

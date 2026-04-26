@@ -119,6 +119,10 @@ textarea {
   gap: 8px;
 }
 
+.resultHeader {
+  align-items: flex-start;
+}
+
 .inlineActions {
   display: flex;
   flex-wrap: wrap;
@@ -129,6 +133,20 @@ textarea {
 .inlineActions button {
   min-height: 30px;
   padding: 0 10px;
+}
+
+.toggleRow {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.toggleRow input {
+  width: auto;
 }
 
 body.wordHost .configOnly {
@@ -216,10 +234,102 @@ body.wordHost .modelEnable {
   gap: 12px;
 }
 
+.resultActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.resultActions button {
+  min-height: 30px;
+  padding: 0 9px;
+}
+
+.markdownPreview {
+  min-height: 170px;
+  max-height: 360px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  padding: 10px 12px;
+  white-space: normal;
+}
+
+.markdownPreview :first-child {
+  margin-top: 0;
+}
+
+.markdownPreview :last-child {
+  margin-bottom: 0;
+}
+
+.markdownPreview h1,
+.markdownPreview h2,
+.markdownPreview h3 {
+  margin: 12px 0 8px;
+  line-height: 1.25;
+}
+
+.markdownPreview h1 {
+  font-size: 18px;
+}
+
+.markdownPreview h2 {
+  font-size: 16px;
+}
+
+.markdownPreview h3 {
+  font-size: 15px;
+}
+
+.markdownPreview p,
+.markdownPreview ul,
+.markdownPreview ol,
+.markdownPreview blockquote,
+.markdownPreview pre {
+  margin: 0 0 10px;
+}
+
+.markdownPreview ul,
+.markdownPreview ol {
+  padding-left: 20px;
+}
+
+.markdownPreview blockquote {
+  border-left: 3px solid var(--line);
+  color: var(--muted);
+  padding-left: 10px;
+}
+
+.markdownPreview code {
+  border-radius: 4px;
+  background: #f2f4f7;
+  padding: 1px 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+
+.markdownPreview pre {
+  overflow: auto;
+  border-radius: 6px;
+  background: #101828;
+  color: #f9fafb;
+  padding: 10px;
+}
+
+.markdownPreview pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+
 .resultCard[data-state="error"] {
   border-color: var(--danger);
 }
 
-.resultCard[data-state="error"] textarea {
+.resultCard[data-state="error"] textarea,
+.resultCard[data-state="error"] .markdownPreview {
   color: var(--danger);
 }

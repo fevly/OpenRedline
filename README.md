@@ -1,4 +1,4 @@
-# Word AI Reviser
+# OpenRedline
 
 一个 Word Office Add-in 原型：读取 Word 中的选中文本，用自定义 Prompt 调用多个 AI 生成修订版本，比较后把选中的结果插回 Word。
 
