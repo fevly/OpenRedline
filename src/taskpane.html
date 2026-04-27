@@ -17,7 +17,11 @@
             <p id="status">选择 Word 文本后读取。</p>
           </div>
         </div>
-        <button id="loadSelection" class="selectionButton" title="读取选中文本">选中文字</button>
+        <div class="topActions">
+          <button type="button" class="tinyButton" data-open-url="/src/taskpane.html">配置</button>
+          <button type="button" class="tinyButton" data-open-url="https://github.com/fevly/openredline">GitHub</button>
+          <button id="loadSelection" class="selectionButton" title="读取选中文本">选中文字</button>
+        </div>
       </header>
 
       <section class="panel">
@@ -55,17 +59,6 @@
         </label>
       </section>
 
-      <section class="panel settingsPanel">
-        <div class="rowTitle">
-          <span>设置</span>
-        </div>
-        <div class="settingsActions">
-          <button type="button" class="secondaryButton" data-open-url="/src/taskpane.html">配置页</button>
-          <button type="button" class="secondaryButton" data-open-url="/api/health">后端状态</button>
-          <button type="button" class="secondaryButton" data-open-url="https://github.com/fevly/openredline">GitHub</button>
-        </div>
-      </section>
-
       <section class="results" id="results"></section>
     </main>
 
@@ -84,6 +77,6 @@
       </article>
     </template>
 
-    <script type="module" src="./app.js?v=20260427-clean-prompts"></script>
+    <script type="module" src="./app.js?v=20260427-top-actions"></script>
   </body>
 </html>

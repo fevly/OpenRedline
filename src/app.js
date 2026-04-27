@@ -67,7 +67,7 @@ const els = {
   addModel: document.querySelector('#addModel'),
   modelList: document.querySelector('#modelList'),
   normalizeChinese: document.querySelector('#normalizeChinese'),
-  settingsPanel: document.querySelector('.settingsPanel'),
+  topbar: document.querySelector('.topbar'),
   runCompare: document.querySelector('#runCompare'),
   results: document.querySelector('#results'),
   resultTemplate: document.querySelector('#resultTemplate')
@@ -187,7 +187,7 @@ function bindEvents() {
   els.modelList.addEventListener('change', updateModelFromEvent);
   els.modelList.addEventListener('click', handleModelClick);
   els.normalizeChinese.addEventListener('change', saveTextOptions);
-  els.settingsPanel.addEventListener('click', handleSettingsClick);
+  els.topbar.addEventListener('click', handleOpenUrlClick);
   els.runCompare.addEventListener('click', runComparison);
 }
 
@@ -201,7 +201,7 @@ function saveTextOptions() {
   setStatus(state.normalizeChinese ? '插入前会规范为中文全角标点。' : '已关闭中文标点规范化。');
 }
 
-function handleSettingsClick(event) {
+function handleOpenUrlClick(event) {
   const url = event.target.dataset.openUrl;
   if (!url) return;
   openExternalUrl(url);

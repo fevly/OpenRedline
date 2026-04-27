@@ -109,6 +109,24 @@ textarea {
   color: var(--muted);
 }
 
+.topActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tinyButton {
+  min-height: 28px;
+  border-color: var(--line);
+  background: #fff;
+  color: var(--ink);
+  padding: 0 9px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
 .selectionButton {
   min-width: 80px;
   padding: 0 12px;
@@ -161,21 +179,6 @@ textarea {
 
 .toggleRow input {
   width: auto;
-}
-
-.settingsPanel {
-  gap: 10px;
-}
-
-.settingsActions {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.settingsActions button {
-  min-width: 0;
-  padding: 0 8px;
 }
 
 body.wordHost .configOnly {

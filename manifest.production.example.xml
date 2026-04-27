@@ -12,8 +12,8 @@
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
   xsi:type="TaskPaneApp">
   <Id>7f5c9f74-26f6-47c8-8c73-4db5d44c8f29</Id>
-  <Version>1.0.0.0</Version>
-  <ProviderName>Word AI Reviser</ProviderName>
+  <Version>1.0.1.0</Version>
+  <ProviderName>OpenRedline</ProviderName>
   <DefaultLocale>zh-CN</DefaultLocale>
   <DisplayName DefaultValue="OpenRedline"/>
   <Description DefaultValue="在 Word 中用多个 AI 和自定义 Prompt 修订选中文本。"/>
