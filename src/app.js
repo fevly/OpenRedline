@@ -17,6 +17,12 @@ const defaultPrompts = [
   }
 ];
 
+const temporaryPrompt = {
+  name: '临时使用',
+  text: ''
+};
+const temporaryPromptValue = 'temporary';
+
 const defaultModelConfigs = [
   {
     id: 'openai-gpt-4-1',
@@ -51,6 +57,7 @@ const state = {
   prompts: loadJson('word-ai-reviser.prompts', defaultPrompts),
   modelConfigs: normalizeModelConfigs(loadJson('word-ai-reviser.modelConfigs', defaultModelConfigs)),
   selectedPromptIndex: 0,
+  temporaryPromptText: '',
   normalizeChinese: loadJson('word-ai-reviser.normalizeChinese', true)
 };
 
@@ -176,8 +183,13 @@ function loadOfficeScript() {
 function bindEvents() {
   els.loadSelection.addEventListener('click', readSelection);
   els.promptSelect.addEventListener('change', () => {
-    state.selectedPromptIndex = Number(els.promptSelect.value);
+    state.selectedPromptIndex = els.promptSelect.value === temporaryPromptValue ? temporaryPromptValue : Number(els.promptSelect.value);
     fillPromptEditor();
+  });
+  els.promptText.addEventListener('input', () => {
+    if (state.selectedPromptIndex === temporaryPromptValue) {
+      state.temporaryPromptText = els.promptText.value;
+    }
   });
   els.addPrompt.addEventListener('click', addPrompt);
   els.savePrompt.addEventListener('click', savePrompt);
@@ -218,20 +230,30 @@ function openExternalUrl(url) {
 
 function renderPrompts() {
   els.promptSelect.innerHTML = '';
+  const temporaryOption = document.createElement('option');
+  temporaryOption.value = temporaryPromptValue;
+  temporaryOption.textContent = temporaryPrompt.name;
+  els.promptSelect.append(temporaryOption);
   state.prompts.forEach((prompt, index) => {
     const option = document.createElement('option');
     option.value = String(index);
     option.textContent = prompt.name;
     els.promptSelect.append(option);
   });
-  els.promptSelect.value = String(state.selectedPromptIndex);
+  els.promptSelect.value = state.selectedPromptIndex === temporaryPromptValue ? temporaryPromptValue : String(state.selectedPromptIndex);
   fillPromptEditor();
 }
 
 function fillPromptEditor() {
-  const prompt = state.prompts[state.selectedPromptIndex] || state.prompts[0];
+  const prompt = getSelectedPrompt();
   els.promptName.value = prompt?.name || '';
   els.promptText.value = prompt?.text || '';
+  const isTemporary = state.selectedPromptIndex === temporaryPromptValue;
+  document.body.classList.toggle('temporaryPromptMode', isTemporary);
+  els.promptText.placeholder = isTemporary ? '输入本次临时使用的 Prompt，不会保存。' : '';
+  els.promptName.disabled = isTemporary;
+  els.savePrompt.disabled = isTemporary;
+  els.deletePrompt.disabled = isTemporary;
 }
 
 async function addPrompt() {
@@ -364,6 +386,11 @@ async function readSelection() {
 }
 
 async function savePrompt() {
+  if (state.selectedPromptIndex === temporaryPromptValue) {
+    setStatus('临时 Prompt 不会保存。', true);
+    return;
+  }
+
   const name = els.promptName.value.trim();
   const text = els.promptText.value.trim();
   if (!name || !text) {
@@ -385,6 +412,7 @@ async function savePrompt() {
 }
 
 async function deletePrompt() {
+  if (state.selectedPromptIndex === temporaryPromptValue) return;
   if (!state.prompts.length) return;
 
   state.prompts.splice(state.selectedPromptIndex, 1);
@@ -452,7 +480,7 @@ async function saveModelConfigs(message) {
 
 async function runComparison() {
   const text = els.selectedText.value.trim();
-  const prompt = els.promptText.value.trim();
+  const prompt = getCurrentPromptText();
   await saveModelConfigs('模型配置已保存并同步，准备生成。');
   const selectedModels = getSelectedModels();
 
@@ -724,6 +752,24 @@ function escapeHtml(source) {
 
 function getSelectedModels() {
   return state.modelConfigs.filter((item) => item.enabled);
+}
+
+function getSelectedPrompt() {
+  if (state.selectedPromptIndex === temporaryPromptValue) {
+    return {
+      ...temporaryPrompt,
+      text: state.temporaryPromptText
+    };
+  }
+  return state.prompts[state.selectedPromptIndex] || state.prompts[0];
+}
+
+function getCurrentPromptText() {
+  if (state.selectedPromptIndex === temporaryPromptValue) {
+    state.temporaryPromptText = els.promptText.value;
+    return state.temporaryPromptText.trim();
+  }
+  return els.promptText.value.trim();
 }
 
 function normalizeModelConfigs(configs) {

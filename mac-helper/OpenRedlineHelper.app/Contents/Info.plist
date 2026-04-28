@@ -10,6 +10,8 @@
   <string>OpenRedline Helper</string>
   <key>CFBundleDisplayName</key>
   <string>OpenRedline Helper</string>
+  <key>CFBundleIconFile</key>
+  <string>OpenRedline</string>
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleShortVersionString</key>

@@ -5,7 +5,7 @@
   xmlns:ov="http://schemas.microsoft.com/office/taskpaneappversionoverrides"
   xsi:type="TaskPaneApp">
   <Id>7f5c9f74-26f6-47c8-8c73-4db5d44c8f29</Id>
-  <Version>1.0.2.0</Version>
+  <Version>1.0.4.0</Version>
   <ProviderName>OpenRedline</ProviderName>
   <DefaultLocale>zh-CN</DefaultLocale>
   <DisplayName DefaultValue="OpenRedline"/>
@@ -20,7 +20,7 @@
     <Host Name="Document"/>
   </Hosts>
   <DefaultSettings>
-    <SourceLocation DefaultValue="https://localhost:3000/src/taskpane.html?v=20260428-ribbon"/>
+    <SourceLocation DefaultValue="https://localhost:3000/src/taskpane.html?v=20260428-logo-prompt"/>
   </DefaultSettings>
   <Permissions>ReadWriteDocument</Permissions>
   <VersionOverrides xmlns="http://schemas.microsoft.com/office/taskpaneappversionoverrides" xsi:type="VersionOverridesV1_0">
@@ -34,23 +34,23 @@
           </GetStarted>
           <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <OfficeTab id="TabHome">
-              <Group id="CommandsGroup">
-                <Label resid="CommandsGroup.Label"/>
+              <Group id="OpenRedlineGroup">
+                <Label resid="OpenRedlineGroup.Label"/>
                 <Icon>
-                  <bt:Image size="16" resid="Icon.16x16"/>
-                  <bt:Image size="32" resid="Icon.32x32"/>
-                  <bt:Image size="80" resid="Icon.80x80"/>
+                  <bt:Image size="16" resid="OpenRedlineIcon.16x16"/>
+                  <bt:Image size="32" resid="OpenRedlineIcon.32x32"/>
+                  <bt:Image size="80" resid="OpenRedlineIcon.80x80"/>
                 </Icon>
-                <Control xsi:type="Button" id="TaskpaneButton">
-                  <Label resid="TaskpaneButton.Label"/>
+                <Control xsi:type="Button" id="OpenRedlineButton">
+                  <Label resid="OpenRedlineButton.Label"/>
                   <Supertip>
-                    <Title resid="TaskpaneButton.Label"/>
-                    <Description resid="TaskpaneButton.Tooltip"/>
+                    <Title resid="OpenRedlineButton.Label"/>
+                    <Description resid="OpenRedlineButton.Tooltip"/>
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="Icon.16x16"/>
-                    <bt:Image size="32" resid="Icon.32x32"/>
-                    <bt:Image size="80" resid="Icon.80x80"/>
+                    <bt:Image size="16" resid="OpenRedlineIcon.16x16"/>
+                    <bt:Image size="32" resid="OpenRedlineIcon.32x32"/>
+                    <bt:Image size="80" resid="OpenRedlineIcon.80x80"/>
                   </Icon>
                   <Action xsi:type="ShowTaskpane">
                     <TaskpaneId>ButtonId1</TaskpaneId>
@@ -65,22 +65,22 @@
     </Hosts>
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16x16" DefaultValue="https://localhost:3000/assets/icon-16.png"/>
-        <bt:Image id="Icon.32x32" DefaultValue="https://localhost:3000/assets/icon-32.png"/>
-        <bt:Image id="Icon.80x80" DefaultValue="https://localhost:3000/assets/icon-80.png"/>
+        <bt:Image id="OpenRedlineIcon.16x16" DefaultValue="https://localhost:3000/assets/openredline-ribbon-16.png"/>
+        <bt:Image id="OpenRedlineIcon.32x32" DefaultValue="https://localhost:3000/assets/openredline-ribbon-32.png"/>
+        <bt:Image id="OpenRedlineIcon.80x80" DefaultValue="https://localhost:3000/assets/openredline-ribbon-80.png"/>
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/src/taskpane.html?v=20260428-ribbon"/>
+        <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000/src/taskpane.html?v=20260428-logo-prompt"/>
         <bt:Url id="GetStarted.LearnMoreUrl" DefaultValue="https://localhost:3000"/>
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GetStarted.Title" DefaultValue="OpenRedline 已加载"/>
-        <bt:String id="CommandsGroup.Label" DefaultValue="OpenRedline"/>
-        <bt:String id="TaskpaneButton.Label" DefaultValue="OpenRedline"/>
+        <bt:String id="OpenRedlineGroup.Label" DefaultValue="OpenRedline"/>
+        <bt:String id="OpenRedlineButton.Label" DefaultValue="OpenRedline"/>
       </bt:ShortStrings>
       <bt:LongStrings>
         <bt:String id="GetStarted.Description" DefaultValue="选择一段文字，打开任务窗格，选择 Prompt 和 AI 模型进行比较。"/>
-        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="打开 AI 文本修订任务窗格。"/>
+        <bt:String id="OpenRedlineButton.Tooltip" DefaultValue="打开 OpenRedline 任务窗格。"/>
       </bt:LongStrings>
     </Resources>
   </VersionOverrides>

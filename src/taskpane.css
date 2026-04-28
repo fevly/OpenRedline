@@ -185,6 +185,10 @@ body.wordHost .configOnly {
   display: none !important;
 }
 
+body.wordHost.temporaryPromptMode #promptText.configOnly {
+  display: block !important;
+}
+
 .rowTitle span,
 label {
   font-weight: 650;

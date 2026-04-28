@@ -24,7 +24,10 @@ final class OpenRedlineHelper: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        statusItem.button?.title = "OR"
+        if let button = statusItem.button {
+            button.image = statusIcon(isRunning: false)
+            button.imagePosition = .imageOnly
+        }
         statusItem.button?.toolTip = "OpenRedline"
         rebuildMenu(isRunning: false)
         refreshStatus()
@@ -48,7 +51,28 @@ final class OpenRedlineHelper: NSObject, NSApplicationDelegate {
         menu.addItem(NSMenuItem(title: "退出", action: #selector(quit), keyEquivalent: "q"))
         menu.items.forEach { $0.target = self }
         statusItem.menu = menu
-        statusItem.button?.title = isRunning ? "OR ●" : "OR"
+        statusItem.button?.image = statusIcon(isRunning: isRunning)
+    }
+
+    private func statusIcon(isRunning: Bool) -> NSImage? {
+        let imageURL = URL(fileURLWithPath: projectPath)
+            .appendingPathComponent("assets")
+            .appendingPathComponent("icon-32.png")
+        guard let base = NSImage(contentsOf: imageURL) else {
+            statusItem.button?.title = isRunning ? "OR ●" : "OR"
+            return nil
+        }
+        let size = NSSize(width: 18, height: 18)
+        let icon = NSImage(size: size)
+        icon.lockFocus()
+        base.draw(in: NSRect(origin: .zero, size: size))
+        if isRunning {
+            NSColor.systemGreen.setFill()
+            NSBezierPath(ovalIn: NSRect(x: 12, y: 1, width: 6, height: 6)).fill()
+        }
+        icon.unlockFocus()
+        icon.isTemplate = false
+        return icon
     }
 
     private func refreshStatus() {
