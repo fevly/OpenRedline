@@ -7,7 +7,9 @@
     "start": "node server.js",
     "dev": "node server.js",
     "certs": "office-addin-dev-certs install",
-    "validate": "office-addin-manifest validate manifest.xml"
+    "validate": "office-addin-manifest validate manifest.xml",
+    "helper:build": "zsh mac-helper/build-helper.sh",
+    "helper:open": "open mac-helper/OpenRedlineHelper.app"
   },
   "dependencies": {
     "dotenv": "^16.4.7",

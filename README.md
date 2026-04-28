@@ -43,6 +43,17 @@ npm run dev
 
 当前 manifest 使用 `https://localhost:3000`。第一次运行前执行 `npm run certs`，让 Office 信任本地开发证书。
 
+## Mac 菜单栏助手
+
+项目内置一个轻量 Mac 菜单栏助手，用来启动/停止本地后端、打开配置页和 GitHub。
+
+```bash
+npm run helper:build
+npm run helper:open
+```
+
+打开后，菜单栏会出现 `OR`；如果后端在线，会显示 `OR ●`。当前版本不会自动加入开机启动，适合先做本地测试。
+
 ## 发布到 GitHub
 
 1. 在 GitHub 新建仓库，例如 `openredline`。
