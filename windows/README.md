@@ -1,24 +1,22 @@
 # OpenRedline for Windows
 
-This folder contains the Windows local installer scripts.
+This folder contains the Windows installer scripts and EXE installer definition.
 
 ## Requirements
 
 - Windows 10 or Windows 11
 - Microsoft Word for Windows
-- Node.js LTS
 - PowerShell
 
 ## Install
 
-Open PowerShell as Administrator from the extracted OpenRedline folder:
+For normal users, download and run:
 
-```powershell
-Set-ExecutionPolicy -Scope Process Bypass
-.\windows\install-openredline.ps1
+```text
+OpenRedline-windows-preview.exe
 ```
 
-The installer copies OpenRedline to `%LOCALAPPDATA%\OpenRedline`, installs dependencies, trusts the local HTTPS certificate, registers a startup task, creates Start Menu shortcuts, starts the backend, and registers a Word shared-folder add-in catalog.
+The EXE installer includes a bundled Node.js runtime. Users do not need to install Node.js manually.
 
 After installation, restart Word, then open:
 
@@ -27,6 +25,19 @@ Home > Add-ins > Advanced > Shared Folder
 ```
 
 Choose OpenRedline and add it to Word.
+
+## Script Install
+
+The PowerShell installer is still available for development builds. It requires Node.js LTS.
+
+Open PowerShell as Administrator from the extracted OpenRedline folder:
+
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass
+.\windows\install-openredline.ps1
+```
+
+The script installer copies OpenRedline to `%LOCALAPPDATA%\OpenRedline`, installs dependencies, trusts the local HTTPS certificate, registers a startup task, creates Start Menu shortcuts, starts the backend, and registers a Word shared-folder add-in catalog.
 
 ## Start and stop
 

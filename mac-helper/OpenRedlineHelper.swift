@@ -30,8 +30,8 @@ final class OpenRedlineHelper: NSObject, NSApplicationDelegate {
         NSApp.setActivationPolicy(.accessory)
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = statusItem.button {
-            button.image = statusIcon(isRunning: false)
-            button.imagePosition = .imageOnly
+            button.image = nil
+            button.attributedTitle = statusTitle(isRunning: false)
         }
         statusItem.button?.toolTip = "OpenRedline"
         rebuildMenu(isRunning: false)
@@ -59,50 +59,26 @@ final class OpenRedlineHelper: NSObject, NSApplicationDelegate {
         menu.addItem(NSMenuItem(title: "退出", action: #selector(quit), keyEquivalent: "q"))
         menu.items.forEach { $0.target = self }
         statusItem.menu = menu
-        statusItem.button?.image = statusIcon(isRunning: isRunning)
+        statusItem.button?.image = nil
+        statusItem.button?.attributedTitle = statusTitle(isRunning: isRunning)
     }
 
-    private func statusIcon(isRunning: Bool) -> NSImage? {
-        let size = NSSize(width: 18, height: 18)
-        let icon = NSImage(size: size)
-        icon.lockFocus()
-        drawStatusGlyph(in: NSRect(origin: .zero, size: size))
-        icon.unlockFocus()
-        icon.isTemplate = true
-        return icon
-    }
-
-    private func drawStatusGlyph(in rect: NSRect) {
-        let ink = NSColor.black.withAlphaComponent(0.95)
-
-        ink.setFill()
-        let page = NSBezierPath()
-        page.move(to: NSPoint(x: rect.minX + 4.1, y: rect.minY + 3.0))
-        page.line(to: NSPoint(x: rect.minX + 4.1, y: rect.maxY - 3.0))
-        page.line(to: NSPoint(x: rect.maxX - 6.2, y: rect.maxY - 3.0))
-        page.line(to: NSPoint(x: rect.maxX - 3.0, y: rect.maxY - 6.2))
-        page.line(to: NSPoint(x: rect.maxX - 3.0, y: rect.minY + 3.0))
-        page.close()
-        page.fill()
-
-        NSColor.clear.setFill()
-        NSBezierPath(rect: NSRect(x: rect.minX + 6.2, y: rect.minY + 5.2, width: 8.0, height: 9.2)).fill()
-
-        ink.setStroke()
-        let pen = NSBezierPath()
-        pen.lineWidth = 2.0
-        pen.lineCapStyle = .square
-        pen.move(to: NSPoint(x: rect.minX + 4.1, y: rect.minY + 3.4))
-        pen.line(to: NSPoint(x: rect.maxX - 3.2, y: rect.maxY - 8.8))
-        pen.stroke()
-
-        let mark = NSBezierPath()
-        mark.lineWidth = 1.0
-        mark.move(to: NSPoint(x: rect.maxX - 7.0, y: rect.minY + 6.0))
-        mark.line(to: NSPoint(x: rect.maxX - 3.0, y: rect.minY + 6.0))
-        mark.move(to: NSPoint(x: rect.maxX - 5.0, y: rect.minY + 4.0))
-        mark.line(to: NSPoint(x: rect.maxX - 5.0, y: rect.minY + 8.0))
-        mark.stroke()
+    private func statusTitle(isRunning: Bool) -> NSAttributedString {
+        let title = NSMutableAttributedString(
+            string: "OR ",
+            attributes: [
+                .font: NSFont.menuBarFont(ofSize: 13),
+                .foregroundColor: NSColor.labelColor
+            ]
+        )
+        title.append(NSAttributedString(
+            string: "●",
+            attributes: [
+                .font: NSFont.menuBarFont(ofSize: 12),
+                .foregroundColor: isRunning ? NSColor.systemRed : NSColor.tertiaryLabelColor
+            ]
+        ))
+        return title
     }
 
     private func refreshStatus() {

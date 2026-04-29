@@ -1,7 +1,8 @@
 param(
   [string]$InstallRoot = (Join-Path $env:LOCALAPPDATA "OpenRedline"),
   [string]$CatalogName = "OpenRedlineOfficeAddins",
-  [switch]$KeepSettings
+  [switch]$KeepSettings,
+  [switch]$SkipInstallRootRemoval
 )
 
 $ErrorActionPreference = "SilentlyContinue"
@@ -23,10 +24,12 @@ Remove-Item $ProgramsDir -Recurse -Force
 Remove-Item $CatalogDir -Recurse -Force
 Remove-Item $UninstallRegistryPath -Recurse -Force
 
-if ($KeepSettings) {
-  Get-ChildItem -LiteralPath $InstallRoot -Force | Where-Object { $_.Name -ne "data" } | Remove-Item -Recurse -Force
-} else {
-  Remove-Item $InstallRoot -Recurse -Force
+if (-not $SkipInstallRootRemoval) {
+  if ($KeepSettings) {
+    Get-ChildItem -LiteralPath $InstallRoot -Force | Where-Object { $_.Name -ne "data" } | Remove-Item -Recurse -Force
+  } else {
+    Remove-Item $InstallRoot -Recurse -Force
+  }
 }
 
 Write-Host "OpenRedline uninstalled."

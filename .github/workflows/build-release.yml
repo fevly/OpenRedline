@@ -25,7 +25,7 @@ jobs:
           path: dist/OpenRedline-mac-preview.pkg
 
   windows:
-    name: Windows ZIP
+    name: Windows EXE
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
@@ -35,18 +35,27 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run validate
-      - name: Package Windows installer
+      - name: Prepare Windows installer staging
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path dist | Out-Null
-          $staging = "dist\OpenRedline-windows"
+          $staging = "dist\OpenRedline-windows-staging"
           New-Item -ItemType Directory -Force -Path $staging | Out-Null
-          $exclude = @(".git", ".github", ".env", "data", "dist", "node_modules", ".DS_Store", "openredline-helper.log")
+          $exclude = @(".git", ".github", ".env", "data", "dist", ".DS_Store", "openredline-helper.log", "mac-helper", "installer")
           Get-ChildItem -Force | Where-Object { $exclude -notcontains $_.Name } | ForEach-Object {
             Copy-Item $_.FullName (Join-Path $staging $_.Name) -Recurse -Force
           }
-          Compress-Archive -Path "$staging\*" -DestinationPath "dist\OpenRedline-windows-preview.zip" -Force
+          New-Item -ItemType Directory -Force -Path "$staging\runtime" | Out-Null
+          Copy-Item (Get-Command node).Source "$staging\runtime\node.exe" -Force
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --yes --no-progress
+      - name: Build Windows EXE installer
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          & $iscc "windows\openredline.iss" "/DSourceDir=$PWD\dist\OpenRedline-windows-staging" "/DOutputDir=$PWD\dist"
       - uses: actions/upload-artifact@v4
         with:
           name: OpenRedline-windows-preview
-          path: dist/OpenRedline-windows-preview.zip
+          path: dist/OpenRedline-windows-preview.exe

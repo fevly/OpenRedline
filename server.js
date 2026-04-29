@@ -10,7 +10,10 @@ import { getHttpsServerOptions } from 'office-addin-dev-certs';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = Number(process.env.PORT || 3000);
-const settingsPath = path.join(__dirname, 'data', 'settings.json');
+const defaultDataDir = process.platform === 'win32' && process.env.LOCALAPPDATA
+  ? path.join(process.env.LOCALAPPDATA, 'OpenRedline', 'data')
+  : path.join(__dirname, 'data');
+const settingsPath = path.join(process.env.OPENREDLINE_DATA_DIR || defaultDataDir, 'settings.json');
 
 app.use(express.json({ limit: '1mb' }));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));

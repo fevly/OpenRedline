@@ -61,25 +61,24 @@ sudo zsh "/Library/Application Support/OpenRedline/uninstall-openredline.sh" --k
 
 ## Windows 安装与启动
 
-Windows 版本使用本地安装脚本安装。
+Windows 版本提供 EXE 安装器。
 
-安装前请先安装 Node.js LTS。
+普通用户下载并运行：
 
-下载 Windows 压缩包并解压后，在 PowerShell 中运行：
-
-```powershell
-Set-ExecutionPolicy -Scope Process Bypass
-.\windows\install-openredline.ps1
+```text
+OpenRedline-windows-preview.exe
 ```
 
-安装脚本会：
+Windows EXE 安装器内置 Node.js 运行时，不需要用户手动安装 Node.js。
 
-- 复制 OpenRedline 到本机用户目录
-- 安装依赖
+安装器会：
+
+- 安装 OpenRedline
+- 安装内置 Node.js 运行时
 - 信任本地 HTTPS 证书
 - 注册开机启动任务
-- 创建开始菜单快捷方式
 - 配置 Word 共享文件夹加载项目录
+- 创建开始菜单快捷方式
 
 安装完成后，重启 Word，进入：
 

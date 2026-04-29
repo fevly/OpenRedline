@@ -9,6 +9,8 @@ $LogDir = Join-Path $env:LOCALAPPDATA "OpenRedline\logs"
 $OutLogPath = Join-Path $LogDir "openredline-server.out.log"
 $ErrLogPath = Join-Path $LogDir "openredline-server.err.log"
 $PidPath = Join-Path $LogDir "openredline-server.pid"
+$BundledNode = Join-Path $Root "runtime\node.exe"
+$DataDir = Join-Path $env:LOCALAPPDATA "OpenRedline\data"
 
 New-Item -ItemType Directory -Force -Path $LogDir | Out-Null
 
@@ -21,7 +23,14 @@ function Test-OpenRedlineHealth {
   }
 }
 
-if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
+$node = $null
+if (Test-Path $BundledNode) {
+  $node = $BundledNode
+} elseif (Get-Command node -ErrorAction SilentlyContinue) {
+  $node = (Get-Command node).Source
+}
+
+if (-not $node) {
   throw "Node.js was not found in PATH. Install Node.js LTS, then run the installer again."
 }
 
@@ -32,7 +41,7 @@ if (Test-OpenRedlineHealth) {
   exit 0
 }
 
-$node = (Get-Command node).Source
+$env:OPENREDLINE_DATA_DIR = $DataDir
 $process = Start-Process `
   -FilePath $node `
   -ArgumentList "server.js" `
