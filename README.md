@@ -1,84 +1,105 @@
 # OpenRedline
 
-一个 Word Office Add-in 原型：读取 Word 中的选中文本，用自定义 Prompt 调用多个大模型生成修订版本，比较后把选中的结果插回 Word。
+OpenRedline 是一个给 Microsoft Word 使用的 AI 文本修订插件。
 
-## 功能
+它可以读取 Word 中选中的文字，用你配置的 AI 模型进行纠错、改写、翻译或自定义处理，并把满意的结果插回 Word。
 
-- 读取当前 Word 选中文本
-- 可新增、删除、自定义 Prompt，并同步到本地共享配置
-- 可新增、删除、保存多组 AI 配置，包括 Provider、API 端点、模型名称和可选 API Key
-- 可同时调用 OpenAI 兼容接口、Anthropic、Gemini
-- 每个大模型的结果可手动微调后替换 Word 当前选区
+## 主要功能
 
-## 项目结构
+- 读取 Word 当前选中的文本
+- 一键纠错、学术改写、中译英、英译中
+- 支持临时 Prompt
+- 支持同时调用多个 AI 模型并比较结果
+- 支持自定义 API 端点、模型名称和 API Key
+- 支持 Markdown 预览，插入 Word 时自动转为纯文本
+- 可选中文标点规范化
+- 可直接规范选中文本中的中文标点
 
-```text
-.
-├── docs/                         # GitHub Pages 项目首页
-├── src/                          # Word 任务窗格前端
-├── server.js                     # 本地 HTTPS 服务与 AI 代理
-├── manifest.xml                  # 本地开发 manifest
-├── manifest.production.example.xml
-└── .env.example
-```
+## 适用平台
 
-## 本地运行
+当前主要面向 macOS 版 Microsoft Word。
+
+Windows 版本和云端后端方案还在规划中。
+
+## Mac 安装与启动
+
+下载或构建 OpenRedline 后，通常需要完成两件事：
+
+1. 启动本地后端
+2. 在 Word 中加载 OpenRedline 插件
+
+如果你使用的是 Mac 安装包，安装后打开 `OpenRedlineHelper`。它会出现在菜单栏中，并自动启动本地后端。
+
+如果需要手动运行：
 
 ```bash
-cd openredline
 npm install
-cp .env.example .env
 npm run certs
 npm run dev
 ```
 
-然后在 `.env` 里填入需要启用的 API Key，或者直接在插件任务窗格的“模型配置”里填 API Key、端点和模型名称。模型配置会同时保存在浏览器缓存和本地共享配置文件 `data/settings.json`，所以普通网页和 Word 任务窗格可以读取同一份配置。
+本地服务默认地址是：
 
-## 在 Word 里加载
-
-开发阶段先 sideload `manifest.xml`。Mac 版 Word 通常可以通过“获取加载项 / 我的加载项 / 上传我的加载项”加载 manifest；如果你的 Word 版本不显示上传入口，可以把 manifest 放到 Office 的本地 sideload 目录，或后续改用 `office-addin-debugging` 自动启动。
-
-当前 manifest 使用 `https://localhost:3000`。第一次运行前执行 `npm run certs`，让 Office 信任本地开发证书。
-
-## Mac 菜单栏助手
-
-项目内置一个轻量 Mac 菜单栏助手，用来启动/停止本地后端、打开配置页和 GitHub。
-
-```bash
-npm run helper:build
-npm run helper:open
+```text
+https://localhost:3000
 ```
 
-打开后，菜单栏会出现 `OR`；如果后端在线，会显示 `OR ●`。当前版本不会自动加入开机启动，适合先做本地测试。
+## 在 Word 中使用
 
-## 发布到 GitHub
+1. 打开 Word 文档。
+2. 选中一段需要处理的文字。
+3. 打开 OpenRedline 任务窗格。
+4. 点击“选中文字”。
+5. 选择 Prompt 和参与比较的模型。
+6. 点击“生成比较”。
+7. 查看各模型结果，必要时手动编辑。
+8. 点击“插入”，替换 Word 当前选区。
 
-1. 在 GitHub 新建仓库，例如 `openredline`。
-2. 在本地初始化并提交：
+## 配置模型
 
-```bash
-git init
-git add .
-git commit -m "Initial Word AI Reviser prototype"
-git branch -M main
-git remote add origin https://github.com/fevly/openredline.git
-git push -u origin main
-```
+在插件顶部点击“配置”，可以添加或修改模型。
 
-3. 在仓库 Settings -> Pages 中选择 `Deploy from a branch`，分支选择 `main`，目录选择 `/docs`。
-4. Pages 发布后，项目首页会出现在 GitHub 提供的 Pages 地址。
+每个模型需要配置：
 
-发布页里的 `docs/manifest.local.xml` 仍然指向 `https://localhost:3000`，适合让测试者下载后在本机运行插件。若要让别人不用本地启动服务，需要部署后端，并按 `manifest.production.example.xml` 生成线上 manifest。
+- 显示名称
+- Provider
+- API 端点
+- 模型名称
+- API Key
 
-## 分发路线
+OpenRedline 支持 OpenAI 兼容接口，也可以配置 Anthropic 和 Gemini。
 
-- **个人测试**：GitHub Pages 放说明页，测试者下载本地 manifest，自行运行 `npm run dev`。
-- **团队内部**：部署 `server.js` 或等价后端到 HTTPS 域名，生产 manifest 指向该域名，再通过组织管理员集中部署。
-- **公开上架**：准备隐私政策、支持地址、权限说明和生产服务后，再提交 Microsoft AppSource。
+配置会保存在本机，不会提交到 GitHub。
 
-## 扩展建议
+## Prompt
 
-- 增加“并排 diff”视图，标出每个版本相对原文的变化。
-- 增加“批注插入”模式，不直接替换正文，而是把 AI 建议写入 Word 评论。
-- 增加团队 Prompt 库，从 JSON 或后端数据库加载。
-- 增加评分 Prompt，让一个模型对多个候选版本打分并解释差异。
+默认保留四个常用 Prompt：
+
+- 纠错
+- 学术改写
+- 中译英
+- 英译中
+
+你也可以新增自己的 Prompt，或者选择“临时使用”来写一次性指令。
+
+## 中文标点规范化
+
+OpenRedline 支持将英文半角标点转换为中文写作中常用的全角标点。
+
+你可以：
+
+- 在插入 AI 结果前自动规范标点
+- 直接对 Word 选中文本执行“规范标点”
+
+规范选中文本时会尽量保留 Word 中的脚注等结构。
+
+## 注意事项
+
+- 请不要把自己的 API Key 提交到公开仓库。
+- 本项目默认使用本地后端代理 AI 请求。
+- 如果 Word 无法加载插件，请先确认 `https://localhost:3000` 可以打开。
+- 如果菜单栏助手没有启动后端，可以重新打开 `OpenRedlineHelper`。
+
+## License
+
+Apache License 2.0
