@@ -36,6 +36,9 @@ final class OpenRedlineHelper: NSObject, NSApplicationDelegate {
         statusItem.button?.toolTip = "OpenRedline"
         rebuildMenu(isRunning: false)
         refreshStatus()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+            self?.startServerIfNeeded()
+        }
         statusTimer = Timer.scheduledTimer(withTimeInterval: 8, repeats: true) { [weak self] _ in
             self?.refreshStatus()
         }
@@ -125,15 +128,25 @@ final class OpenRedlineHelper: NSObject, NSApplicationDelegate {
     }
 
     @objc private func startServer() {
+        startServerIfNeeded()
+    }
+
+    private func startServerIfNeeded() {
         if serverProcess?.isRunning == true {
+            refreshStatus()
+            return
+        }
+        if backendPortIsListening() {
             refreshStatus()
             return
         }
 
         let process = Process()
         process.currentDirectoryURL = URL(fileURLWithPath: projectPath)
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
-        process.arguments = ["node", "server.js"]
+        let nodeURL = nodeExecutableURL()
+        process.executableURL = nodeURL
+        process.arguments = nodeURL.path == "/usr/bin/env" ? ["node", "server.js"] : ["server.js"]
+        process.environment = processEnvironment()
 
         let logURL = URL(fileURLWithPath: projectPath).appendingPathComponent("openredline-helper.log")
         if !FileManager.default.fileExists(atPath: logURL.path) {
@@ -154,6 +167,45 @@ final class OpenRedlineHelper: NSObject, NSApplicationDelegate {
         } catch {
             showAlert("无法启动后端", message: error.localizedDescription)
         }
+    }
+
+    private func backendPortIsListening() -> Bool {
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/sbin/lsof")
+        process.arguments = ["-tiTCP:3000", "-sTCP:LISTEN"]
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        do {
+            try process.run()
+            process.waitUntilExit()
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            return process.terminationStatus == 0 && !data.isEmpty
+        } catch {
+            return false
+        }
+    }
+
+    private func nodeExecutableURL() -> URL {
+        let candidates = [
+            "/opt/homebrew/bin/node",
+            "/usr/local/bin/node",
+            "/usr/bin/node"
+        ]
+        if let path = candidates.first(where: { FileManager.default.isExecutableFile(atPath: $0) }) {
+            return URL(fileURLWithPath: path)
+        }
+        return URL(fileURLWithPath: "/usr/bin/env")
+    }
+
+    private func processEnvironment() -> [String: String] {
+        var environment = ProcessInfo.processInfo.environment
+        let fallbackPath = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+        if let currentPath = environment["PATH"], !currentPath.isEmpty {
+            environment["PATH"] = "\(fallbackPath):\(currentPath)"
+        } else {
+            environment["PATH"] = fallbackPath
+        }
+        return environment
     }
 
     @objc private func stopServer() {
