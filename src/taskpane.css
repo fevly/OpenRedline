@@ -39,11 +39,11 @@ textarea {
 
 button {
   min-height: 32px;
-  border: 1px solid rgba(15, 79, 63, 0.88);
+  border: 1px solid var(--apple-blue);
   border-radius: 6px;
-  background: linear-gradient(180deg, rgba(18, 94, 75, 0.98), rgba(10, 58, 48, 0.98));
+  background: linear-gradient(180deg, #0a84ff, var(--apple-blue));
   color: var(--accent-ink);
-  box-shadow: var(--inner-light), 0 8px 16px rgba(10, 58, 48, 0.18);
+  box-shadow: var(--inner-light), 0 8px 16px rgba(0, 113, 227, 0.18);
   padding: 0 12px;
   cursor: pointer;
 }
@@ -55,10 +55,10 @@ button:disabled {
 
 .secondaryButton,
 .ghostButton {
-  border-color: var(--line);
+  border-color: var(--apple-blue);
   background: rgba(255, 255, 255, 0.58);
-  color: var(--ink);
-  box-shadow: var(--inner-light), 0 8px 18px rgba(23, 32, 51, 0.06);
+  color: var(--apple-blue);
+  box-shadow: var(--inner-light), 0 8px 18px rgba(0, 113, 227, 0.08);
 }
 
 .dangerButton {
@@ -84,7 +84,7 @@ textarea:focus,
 input:focus,
 select:focus,
 button:focus-visible {
-  outline: 2px solid rgba(15, 79, 63, 0.26);
+  outline: 2px solid rgba(0, 113, 227, 0.26);
   outline-offset: 2px;
 }
 
@@ -150,9 +150,9 @@ textarea {
 
 .tinyButton {
   min-height: 28px;
-  border-color: var(--line);
+  border-color: var(--apple-blue);
   background: rgba(255, 255, 255, 0.54);
-  color: var(--ink);
+  color: var(--apple-blue);
   padding: 0 9px;
   font-size: 12px;
   white-space: nowrap;
@@ -160,16 +160,8 @@ textarea {
 
 .selectionButton {
   min-width: 80px;
-  border-color: var(--apple-blue);
-  background: rgba(255, 255, 255, 0.56);
-  color: var(--apple-blue);
-  box-shadow: var(--inner-light), 0 8px 18px rgba(0, 113, 227, 0.1);
   padding: 0 12px;
   white-space: nowrap;
-}
-
-.selectionButton:focus-visible {
-  outline-color: rgba(0, 113, 227, 0.26);
 }
 
 .panel,
