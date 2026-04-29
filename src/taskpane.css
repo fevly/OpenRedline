@@ -1,13 +1,18 @@
 :root {
   color-scheme: light;
-  --ink: #1f2937;
-  --muted: #667085;
-  --line: #d0d5dd;
-  --bg: #f7f7f4;
-  --panel: #ffffff;
-  --accent: #0f766e;
+  --ink: #172033;
+  --muted: #5f6b7c;
+  --line: rgba(122, 139, 160, 0.28);
+  --bg: #eef4f3;
+  --panel: rgba(255, 255, 255, 0.68);
+  --panel-strong: rgba(255, 255, 255, 0.86);
+  --accent: #0f4f3f;
+  --accent-deep: #0a3a30;
   --accent-ink: #ffffff;
   --danger: #b42318;
+  --danger-soft: rgba(180, 35, 24, 0.1);
+  --shadow: 0 14px 34px rgba(23, 32, 51, 0.12);
+  --inner-light: inset 0 1px 0 rgba(255, 255, 255, 0.78);
 }
 
 * {
@@ -16,7 +21,10 @@
 
 body {
   margin: 0;
-  background: var(--bg);
+  min-height: 100vh;
+  background:
+    linear-gradient(145deg, rgba(238, 244, 243, 0.94), rgba(245, 247, 250, 0.86) 42%, rgba(232, 242, 244, 0.92)),
+    linear-gradient(45deg, rgba(15, 79, 63, 0.16), rgba(157, 118, 40, 0.08));
   color: var(--ink);
   font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
@@ -30,10 +38,11 @@ textarea {
 
 button {
   min-height: 32px;
-  border: 1px solid var(--accent);
+  border: 1px solid rgba(15, 79, 63, 0.88);
   border-radius: 6px;
-  background: var(--accent);
+  background: linear-gradient(180deg, rgba(18, 94, 75, 0.98), rgba(10, 58, 48, 0.98));
   color: var(--accent-ink);
+  box-shadow: var(--inner-light), 0 8px 16px rgba(10, 58, 48, 0.18);
   padding: 0 12px;
   cursor: pointer;
 }
@@ -46,14 +55,16 @@ button:disabled {
 .secondaryButton,
 .ghostButton {
   border-color: var(--line);
-  background: #fff;
+  background: rgba(255, 255, 255, 0.58);
   color: var(--ink);
+  box-shadow: var(--inner-light), 0 8px 18px rgba(23, 32, 51, 0.06);
 }
 
 .dangerButton {
-  border-color: #fecdca;
-  background: #fff;
+  border-color: rgba(180, 35, 24, 0.22);
+  background: var(--danger-soft);
   color: var(--danger);
+  box-shadow: var(--inner-light), 0 8px 18px rgba(180, 35, 24, 0.08);
 }
 
 textarea,
@@ -62,9 +73,18 @@ select {
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 6px;
-  background: #fff;
+  background: rgba(255, 255, 255, 0.72);
   color: var(--ink);
+  box-shadow: inset 0 1px 3px rgba(23, 32, 51, 0.05);
   padding: 8px 10px;
+}
+
+textarea:focus,
+input:focus,
+select:focus,
+button:focus-visible {
+  outline: 2px solid rgba(15, 79, 63, 0.26);
+  outline-offset: 2px;
 }
 
 textarea {
@@ -79,12 +99,21 @@ textarea {
 
 .topbar {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.52);
+  box-shadow: var(--shadow), var(--inner-light);
+  -webkit-backdrop-filter: blur(22px) saturate(1.35);
+  backdrop-filter: blur(22px) saturate(1.35);
+  padding: 10px;
 }
 
 .brandTitle {
+  flex: 1 1 190px;
   display: grid;
   grid-template-columns: 38px 1fr;
   gap: 10px;
@@ -110,6 +139,7 @@ textarea {
 }
 
 .topActions {
+  flex: 1 1 150px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -120,7 +150,7 @@ textarea {
 .tinyButton {
   min-height: 28px;
   border-color: var(--line);
-  background: #fff;
+  background: rgba(255, 255, 255, 0.54);
   color: var(--ink);
   padding: 0 9px;
   font-size: 12px;
@@ -137,9 +167,12 @@ textarea {
 .resultCard {
   display: grid;
   gap: 8px;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.64);
   border-radius: 8px;
   background: var(--panel);
+  box-shadow: var(--shadow), var(--inner-light);
+  -webkit-backdrop-filter: blur(20px) saturate(1.32);
+  backdrop-filter: blur(20px) saturate(1.32);
   padding: 12px;
 }
 
@@ -216,7 +249,7 @@ label {
   padding: 10px;
   border: 1px solid var(--line);
   border-radius: 6px;
-  background: #fcfcfd;
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .compactModelOption {
@@ -295,7 +328,7 @@ body.wordHost .modelEnable {
   overflow: auto;
   border: 1px solid var(--line);
   border-radius: 6px;
-  background: #fff;
+  background: var(--panel-strong);
   padding: 10px 12px;
   white-space: normal;
 }
@@ -375,4 +408,13 @@ body.wordHost .modelEnable {
 .resultCard[data-state="error"] textarea,
 .resultCard[data-state="error"] .markdownPreview {
   color: var(--danger);
+}
+
+.resultCard[data-state="stopped"] {
+  border-color: rgba(95, 107, 124, 0.38);
+}
+
+.resultCard[data-state="stopped"] textarea,
+.resultCard[data-state="stopped"] .markdownPreview {
+  color: var(--muted);
 }

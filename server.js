@@ -49,17 +49,26 @@ app.put('/api/settings', async (req, res) => {
 });
 
 app.post('/api/revise', async (req, res) => {
+  const controller = new AbortController();
+  res.on('close', () => {
+    if (!res.writableEnded) controller.abort();
+  });
+
   try {
     const { text, prompt, provider, model, baseUrl, apiKey } = req.body ?? {};
     if (!text?.trim()) return res.status(400).json({ error: '缺少待修订文本。' });
     if (!prompt?.trim()) return res.status(400).json({ error: '缺少 Prompt。' });
     if (!provider || !model) return res.status(400).json({ error: '缺少 AI provider 或 model。' });
 
-    const output = await callProvider({ provider, model, baseUrl, apiKey, prompt, text });
-    res.json({ output });
+    const output = await callProvider({ provider, model, baseUrl, apiKey, prompt, text, signal: controller.signal });
+    if (!res.destroyed) res.json({ output });
   } catch (error) {
+    if (error.name === 'AbortError') {
+      if (!res.headersSent && !res.destroyed) res.status(499).json({ error: '请求已取消。' });
+      return;
+    }
     console.error(error);
-    res.status(500).json({ error: error.message || 'AI 调用失败。' });
+    if (!res.headersSent && !res.destroyed) res.status(500).json({ error: error.message || 'AI 调用失败。' });
   }
 });
 
@@ -72,14 +81,15 @@ async function readSettings() {
   }
 }
 
-async function callProvider({ provider, model, baseUrl, apiKey, prompt, text }) {
+async function callProvider({ provider, model, baseUrl, apiKey, prompt, text, signal }) {
   if (provider === 'openai') {
     return callOpenAICompatible({
       baseUrl: baseUrl || process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
       apiKey: apiKey || process.env.OPENAI_API_KEY,
       model,
       prompt,
-      text
+      text,
+      signal
     });
   }
 
@@ -89,7 +99,8 @@ async function callProvider({ provider, model, baseUrl, apiKey, prompt, text }) 
       apiKey: apiKey || process.env.ANTHROPIC_API_KEY,
       model,
       prompt,
-      text
+      text,
+      signal
     });
   }
 
@@ -99,19 +110,21 @@ async function callProvider({ provider, model, baseUrl, apiKey, prompt, text }) 
       apiKey: apiKey || process.env.GEMINI_API_KEY,
       model,
       prompt,
-      text
+      text,
+      signal
     });
   }
 
   throw new Error(`暂不支持的 provider: ${provider}`);
 }
 
-async function callOpenAICompatible({ baseUrl, apiKey, model, prompt, text }) {
+async function callOpenAICompatible({ baseUrl, apiKey, model, prompt, text, signal }) {
   if (!apiKey) throw new Error('未配置 OPENAI_API_KEY。');
 
   const endpoint = buildEndpoint(baseUrl, '/chat/completions');
   const response = await fetch(endpoint, {
     method: 'POST',
+    signal,
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiKey}`
@@ -130,12 +143,13 @@ async function callOpenAICompatible({ baseUrl, apiKey, model, prompt, text }) {
   return data.choices?.[0]?.message?.content?.trim() || '';
 }
 
-async function callAnthropic({ baseUrl, apiKey, model, prompt, text }) {
+async function callAnthropic({ baseUrl, apiKey, model, prompt, text, signal }) {
   if (!apiKey) throw new Error('未配置 ANTHROPIC_API_KEY。');
 
   const endpoint = buildEndpoint(baseUrl, '/messages');
   const response = await fetch(endpoint, {
     method: 'POST',
+    signal,
     headers: {
       'Content-Type': 'application/json',
       'x-api-key': apiKey,
@@ -154,12 +168,13 @@ async function callAnthropic({ baseUrl, apiKey, model, prompt, text }) {
   return data.content?.map((part) => part.text || '').join('').trim() || '';
 }
 
-async function callGemini({ baseUrl, apiKey, model, prompt, text }) {
+async function callGemini({ baseUrl, apiKey, model, prompt, text, signal }) {
   if (!apiKey) throw new Error('未配置 GEMINI_API_KEY。');
 
   const endpoint = `${buildEndpoint(baseUrl, `/models/${encodeURIComponent(model)}:generateContent`)}?key=${apiKey}`;
   const response = await fetch(endpoint, {
     method: 'POST',
+    signal,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       generationConfig: { temperature: 0.2 },

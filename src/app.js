@@ -76,12 +76,14 @@ const els = {
   normalizeChinese: document.querySelector('#normalizeChinese'),
   normalizeSelection: document.querySelector('#normalizeSelection'),
   topbar: document.querySelector('.topbar'),
+  stopCompare: document.querySelector('#stopCompare'),
   runCompare: document.querySelector('#runCompare'),
   results: document.querySelector('#results'),
   resultTemplate: document.querySelector('#resultTemplate')
 };
 
 let initialized = false;
+let activeGenerationController = null;
 
 function initializeApp() {
   if (initialized) return;
@@ -202,6 +204,7 @@ function bindEvents() {
   els.normalizeChinese.addEventListener('change', saveTextOptions);
   els.normalizeSelection.addEventListener('click', normalizeSelectionText);
   els.topbar.addEventListener('click', handleOpenUrlClick);
+  els.stopCompare.addEventListener('click', stopComparison);
   els.runCompare.addEventListener('click', runComparison);
 }
 
@@ -518,6 +521,8 @@ async function saveModelConfigs(message) {
 }
 
 async function runComparison() {
+  if (activeGenerationController) return;
+
   const text = els.selectedText.value.trim();
   const prompt = getCurrentPromptText();
   await saveModelConfigs('模型配置已保存并同步，准备生成。');
@@ -531,20 +536,39 @@ async function runComparison() {
   if (invalid) return setStatus(`模型配置不完整：${invalid.label || invalid.id}`, true);
 
   els.results.innerHTML = '';
-  els.runCompare.disabled = true;
+  activeGenerationController = new AbortController();
+  setGenerating(true);
   setStatus(`正在生成 ${selectedModels.length} 个版本...`);
 
-  await Promise.all(selectedModels.map((item) => createRevision(item, text, prompt)));
-
-  els.runCompare.disabled = false;
-  setStatus('比较完成，可以编辑结果后插入。');
+  try {
+    await Promise.all(selectedModels.map((item) => createRevision(item, text, prompt, activeGenerationController.signal)));
+    setStatus(activeGenerationController.signal.aborted ? '已停止生成，已完成的结果仍可编辑或插入。' : '比较完成，可以编辑结果后插入。');
+  } finally {
+    activeGenerationController = null;
+    setGenerating(false);
+  }
 }
 
-async function createRevision(item, text, prompt) {
+function stopComparison() {
+  if (!activeGenerationController) return;
+  activeGenerationController.abort();
+  els.stopCompare.disabled = true;
+  setStatus('正在停止生成...');
+}
+
+function setGenerating(isGenerating) {
+  els.runCompare.disabled = isGenerating;
+  els.normalizeSelection.disabled = isGenerating;
+  els.stopCompare.hidden = !isGenerating;
+  els.stopCompare.disabled = !isGenerating;
+}
+
+async function createRevision(item, text, prompt, signal) {
   const card = createResultCard(item.label, '生成中...');
   try {
     const response = await fetch('/api/revise', {
       method: 'POST',
+      signal,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         text,
@@ -561,6 +585,13 @@ async function createRevision(item, text, prompt) {
     card.syncPreview();
     card.showPreview();
   } catch (error) {
+    if (signal?.aborted || error.name === 'AbortError') {
+      card.root.dataset.state = 'stopped';
+      card.textarea.value = '已停止生成。';
+      card.syncPreview();
+      card.showEditor();
+      return;
+    }
     card.root.dataset.state = 'error';
     card.textarea.value = error.message;
     card.syncPreview();
