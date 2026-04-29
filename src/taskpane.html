@@ -46,7 +46,10 @@
       <section class="panel">
         <div class="rowTitle">
           <span>参与比较的 AI</span>
-          <button id="runCompare">生成比较</button>
+          <div class="mainActions">
+            <button id="normalizeSelection" class="secondaryButton" type="button">规范标点</button>
+            <button id="runCompare" type="button">生成比较</button>
+          </div>
         </div>
         <div class="rowTitle compactTitle">
           <span>模型</span>
@@ -77,6 +80,6 @@
       </article>
     </template>
 
-    <script type="module" src="./app.js?v=20260428-temp-prompt"></script>
+    <script type="module" src="./app.js?v=20260429-normalize-selection"></script>
   </body>
 </html>

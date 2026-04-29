@@ -162,6 +162,13 @@ textarea {
   gap: 6px;
 }
 
+.mainActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
 .inlineActions button {
   min-height: 30px;
   padding: 0 10px;

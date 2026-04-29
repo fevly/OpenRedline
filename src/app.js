@@ -74,6 +74,7 @@ const els = {
   addModel: document.querySelector('#addModel'),
   modelList: document.querySelector('#modelList'),
   normalizeChinese: document.querySelector('#normalizeChinese'),
+  normalizeSelection: document.querySelector('#normalizeSelection'),
   topbar: document.querySelector('.topbar'),
   runCompare: document.querySelector('#runCompare'),
   results: document.querySelector('#results'),
@@ -199,6 +200,7 @@ function bindEvents() {
   els.modelList.addEventListener('change', updateModelFromEvent);
   els.modelList.addEventListener('click', handleModelClick);
   els.normalizeChinese.addEventListener('change', saveTextOptions);
+  els.normalizeSelection.addEventListener('click', normalizeSelectionText);
   els.topbar.addEventListener('click', handleOpenUrlClick);
   els.runCompare.addEventListener('click', runComparison);
 }
@@ -383,6 +385,44 @@ async function readSelection() {
   } catch (error) {
     setStatus(`读取失败：${error.message}`, true);
   }
+}
+
+async function normalizeSelectionText() {
+  if (globalThis.Word?.run) {
+    setStatus('正在规范 Word 选中文本...');
+    try {
+      let normalized = '';
+      await Word.run(async (context) => {
+        const range = context.document.getSelection();
+        range.load('text');
+        await context.sync();
+        const sourceText = range.text || '';
+        if (!sourceText.trim()) return;
+        normalized = normalizeLiteralChineseText(sourceText);
+        range.insertText(normalized, Word.InsertLocation.replace);
+        await context.sync();
+      });
+
+      if (!normalized) {
+        setStatus('没有读到可规范的选中文本。', true);
+        return;
+      }
+
+      els.selectedText.value = normalized;
+      setStatus('已将选中文本规范为中文标点。');
+    } catch (error) {
+      setStatus(`规范失败：${error.message}`, true);
+    }
+    return;
+  }
+
+  const sourceText = els.selectedText.value;
+  if (!sourceText.trim()) {
+    setStatus('请先输入或读取待规范文本。', true);
+    return;
+  }
+  els.selectedText.value = normalizeLiteralChineseText(sourceText);
+  setStatus('已规范输入框中的中文标点。');
 }
 
 async function savePrompt() {
@@ -716,6 +756,26 @@ function normalizeChineseText(source) {
     })
     .replace(/\./g, (match, offset, whole) => (/\d/.test(whole[offset - 1]) && /\d/.test(whole[offset + 1]) ? match : '。'));
   return text;
+}
+
+function normalizeLiteralChineseText(source) {
+  const protectedText = protectLiteralSegments(source);
+  return restorePlaceholders(normalizeChineseText(protectedText.text), protectedText.placeholders);
+}
+
+function protectLiteralSegments(source) {
+  const placeholders = [];
+  const protect = (value) => {
+    const token = `\uE000${placeholders.length}\uE001`;
+    placeholders.push(value);
+    return token;
+  };
+  const text = String(source || '')
+    .replace(/```[\s\S]*?```/g, (code) => protect(code))
+    .replace(/`[^`]*`/g, (code) => protect(code))
+    .replace(/https?:\/\/[^\s，。；：“”‘’（）？！]+/g, (url) => protect(url))
+    .replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, (email) => protect(email));
+  return { text, placeholders };
 }
 
 function protectPlainTextSegments(source) {
