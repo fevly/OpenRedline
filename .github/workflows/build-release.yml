@@ -1,0 +1,52 @@
+name: Build OpenRedline Packages
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  mac:
+    name: macOS PKG
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm run validate
+      - run: npm run pkg:build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OpenRedline-mac-preview
+          path: dist/OpenRedline-mac-preview.pkg
+
+  windows:
+    name: Windows ZIP
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm ci
+      - run: npm run validate
+      - name: Package Windows installer
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          $staging = "dist\OpenRedline-windows"
+          New-Item -ItemType Directory -Force -Path $staging | Out-Null
+          $exclude = @(".git", ".github", ".env", "data", "dist", "node_modules", ".DS_Store", "openredline-helper.log")
+          Get-ChildItem -Force | Where-Object { $exclude -notcontains $_.Name } | ForEach-Object {
+            Copy-Item $_.FullName (Join-Path $staging $_.Name) -Recurse -Force
+          }
+          Compress-Archive -Path "$staging\*" -DestinationPath "dist\OpenRedline-windows-preview.zip" -Force
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OpenRedline-windows-preview
+          path: dist/OpenRedline-windows-preview.zip

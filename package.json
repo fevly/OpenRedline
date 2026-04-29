@@ -10,7 +10,9 @@
     "validate": "office-addin-manifest validate manifest.xml",
     "helper:build": "zsh mac-helper/build-helper.sh",
     "helper:open": "open mac-helper/OpenRedlineHelper.app",
-    "pkg:build": "zsh installer/build-pkg.sh"
+    "pkg:build": "zsh installer/build-pkg.sh",
+    "windows:install": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File windows/install-openredline.ps1",
+    "windows:uninstall": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File windows/uninstall-openredline.ps1"
   },
   "dependencies": {
     "dotenv": "^16.4.7",

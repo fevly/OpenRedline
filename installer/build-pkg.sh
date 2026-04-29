@@ -18,11 +18,14 @@ ditto "$ROOT/mac-helper/OpenRedlineHelper.app" "$PAYLOAD/Applications/OpenRedlin
 
 rsync -a \
   --exclude ".git" \
+  --exclude ".github" \
   --exclude ".DS_Store" \
   --exclude ".env" \
   --exclude "data" \
   --exclude "dist" \
   --exclude "installer" \
+  --exclude "node_modules" \
+  --exclude "windows" \
   --exclude "assets/openredline-logo.png" \
   --exclude "docs/assets/openredline-logo.png" \
   --exclude "docs/assets/openredline-logo-256.png" \
@@ -30,6 +33,9 @@ rsync -a \
   --exclude "openredline-helper.log" \
   --exclude "src/app 2.js" \
   "$ROOT/" "$PAYLOAD/Library/Application Support/OpenRedline/"
+
+cp "$ROOT/installer/uninstall-mac.sh" "$PAYLOAD/Library/Application Support/OpenRedline/uninstall-openredline.sh"
+chmod 755 "$PAYLOAD/Library/Application Support/OpenRedline/uninstall-openredline.sh"
 
 find "$PAYLOAD" -name ".DS_Store" -delete
 find "$PAYLOAD" -name "._*" -delete

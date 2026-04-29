@@ -3,11 +3,34 @@ set -euo pipefail
 
 APP_SUPPORT="/Library/Application Support/OpenRedline"
 MANIFEST="$APP_SUPPORT/manifest.xml"
+LOG="$APP_SUPPORT/install.log"
 
 CONSOLE_USER="$(stat -f %Su /dev/console)"
 CONSOLE_HOME="$(dscl . -read "/Users/$CONSOLE_USER" NFSHomeDirectory | awk '{print $2}')"
+NPM_BIN=""
+
+for candidate in /opt/homebrew/bin/npm /usr/local/bin/npm /usr/bin/npm; do
+  if [ -x "$candidate" ]; then
+    NPM_BIN="$candidate"
+    break
+  fi
+done
 
 if [ "$CONSOLE_USER" != "root" ] && [ -d "$CONSOLE_HOME" ]; then
+  chown -R "$CONSOLE_USER":staff "$APP_SUPPORT"
+
+  if [ -n "$NPM_BIN" ]; then
+    sudo -u "$CONSOLE_USER" HOME="$CONSOLE_HOME" PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+      "$NPM_BIN" --prefix "$APP_SUPPORT" install >> "$LOG" 2>&1 || true
+    sudo -u "$CONSOLE_USER" HOME="$CONSOLE_HOME" PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin" \
+      "$NPM_BIN" --prefix "$APP_SUPPORT" run certs >> "$LOG" 2>&1 || true
+  else
+    {
+      echo "Node.js/npm was not found during installation."
+      echo "Install Node.js LTS, then run: cd '$APP_SUPPORT' && npm install && npm run certs"
+    } >> "$LOG"
+  fi
+
   mkdir -p "$CONSOLE_HOME/Library/Containers/com.microsoft.Word/Data/Documents/wef"
   cp "$MANIFEST" "$CONSOLE_HOME/Library/Containers/com.microsoft.Word/Data/Documents/wef/openredline.xml"
   chown -R "$CONSOLE_USER":staff "$CONSOLE_HOME/Library/Containers/com.microsoft.Word/Data/Documents/wef"
