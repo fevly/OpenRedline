@@ -1,17 +1,14 @@
 # OpenRedline
 
-一个 Word Office Add-in 原型：读取 Word 中的选中文本，用自定义 Prompt 调用多个 AI 生成修订版本，比较后把选中的结果插回 Word。
-
-> 当前版本适合个人试用和小范围测试。真正面向多人分发时，建议把后端部署到可信 HTTPS 域名，避免把任何共享 API Key 放进前端代码或公开仓库。
+一个 Word Office Add-in 原型：读取 Word 中的选中文本，用自定义 Prompt 调用多个大模型生成修订版本，比较后把选中的结果插回 Word。
 
 ## 功能
 
 - 读取当前 Word 选中文本
-- 内置纠错、学术改写、中译英、英译中 Prompt
 - 可新增、删除、自定义 Prompt，并同步到本地共享配置
 - 可新增、删除、保存多组 AI 配置，包括 Provider、API 端点、模型名称和可选 API Key
 - 可同时调用 OpenAI 兼容接口、Anthropic、Gemini
-- 每个 AI 的结果可手动微调后替换 Word 当前选区
+- 每个大模型的结果可手动微调后替换 Word 当前选区
 
 ## 项目结构
 
