@@ -20,11 +20,12 @@ app.get('/assets/icon-:size.png', (req, res) => {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 80 80">
     <rect x="3" y="3" width="74" height="74" rx="16" fill="#0b0e10"/>
     <rect x="7" y="7" width="66" height="66" rx="14" fill="#15191c"/>
-    <path d="M39 18v44" stroke="#e8242d" stroke-width="7" stroke-linecap="round"/>
     <path d="M38 22C25 23 15 33 15 45c0 12 9 21 21 22" fill="none" stroke="#f1f3f3" stroke-width="7" stroke-linecap="round"/>
+    <path d="M40 21v38" stroke="#aeb4b6" stroke-width="4" stroke-linecap="round"/>
+    <path d="M42 23v34" stroke="#841e24" stroke-width="1.2" stroke-linecap="round"/>
     <path d="M47 36h18L53 47l12 14H53L43 49l10-7H47z" fill="#f1f3f3"/>
-    <path d="M56 56l13 13" stroke="#f1f3f3" stroke-width="5" stroke-linecap="round"/>
-    <path d="M43 63L66 40" stroke="#e8242d" stroke-width="1.6" opacity=".7"/>
+    <path d="M56 56l13 13" stroke="#f1f3f3" stroke-width="4" stroke-linecap="round"/>
+    <path d="M43 60L66 40" stroke="#841e24" stroke-width="1" opacity=".7"/>
   </svg>`;
   res.type('image/svg+xml').send(svg);
 });

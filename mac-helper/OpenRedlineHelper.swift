@@ -63,15 +63,14 @@ final class OpenRedlineHelper: NSObject, NSApplicationDelegate {
         let size = NSSize(width: 18, height: 18)
         let icon = NSImage(size: size)
         icon.lockFocus()
-        drawStatusGlyph(in: NSRect(origin: .zero, size: size), isRunning: isRunning)
+        drawStatusGlyph(in: NSRect(origin: .zero, size: size))
         icon.unlockFocus()
-        icon.isTemplate = false
+        icon.isTemplate = true
         return icon
     }
 
-    private func drawStatusGlyph(in rect: NSRect, isRunning: Bool) {
-        let ink = NSColor.labelColor.withAlphaComponent(0.9)
-        let red = NSColor(calibratedRed: 0.91, green: 0.14, blue: 0.18, alpha: 1)
+    private func drawStatusGlyph(in rect: NSRect) {
+        let ink = NSColor.black.withAlphaComponent(0.95)
         let center = NSPoint(x: rect.midX - 1.2, y: rect.midY)
 
         ink.setStroke()
@@ -87,12 +86,12 @@ final class OpenRedlineHelper: NSObject, NSApplicationDelegate {
         )
         openPath.stroke()
 
-        (isRunning ? red : ink).setStroke()
+        ink.setStroke()
         let corePath = NSBezierPath()
-        corePath.lineWidth = 2.3
+        corePath.lineWidth = 1.8
         corePath.lineCapStyle = .round
-        corePath.move(to: NSPoint(x: center.x, y: rect.minY + 2.4))
-        corePath.line(to: NSPoint(x: center.x, y: rect.maxY - 2.4))
+        corePath.move(to: NSPoint(x: center.x, y: rect.minY + 3.1))
+        corePath.line(to: NSPoint(x: center.x, y: rect.maxY - 3.1))
         corePath.stroke()
 
         ink.setStroke()
