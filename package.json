@@ -9,7 +9,8 @@
     "certs": "office-addin-dev-certs install",
     "validate": "office-addin-manifest validate manifest.xml",
     "helper:build": "zsh mac-helper/build-helper.sh",
-    "helper:open": "open mac-helper/OpenRedlineHelper.app"
+    "helper:open": "open mac-helper/OpenRedlineHelper.app",
+    "pkg:build": "zsh installer/build-pkg.sh"
   },
   "dependencies": {
     "dotenv": "^16.4.7",

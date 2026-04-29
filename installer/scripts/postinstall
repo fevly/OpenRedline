@@ -1,0 +1,17 @@
+#!/bin/zsh
+set -euo pipefail
+
+APP_SUPPORT="/Library/Application Support/OpenRedline"
+MANIFEST="$APP_SUPPORT/manifest.xml"
+
+CONSOLE_USER="$(stat -f %Su /dev/console)"
+CONSOLE_HOME="$(dscl . -read "/Users/$CONSOLE_USER" NFSHomeDirectory | awk '{print $2}')"
+
+if [ "$CONSOLE_USER" != "root" ] && [ -d "$CONSOLE_HOME" ]; then
+  mkdir -p "$CONSOLE_HOME/Library/Containers/com.microsoft.Word/Data/Documents/wef"
+  cp "$MANIFEST" "$CONSOLE_HOME/Library/Containers/com.microsoft.Word/Data/Documents/wef/openredline.xml"
+  chown -R "$CONSOLE_USER":staff "$CONSOLE_HOME/Library/Containers/com.microsoft.Word/Data/Documents/wef"
+  chown -R "$CONSOLE_USER":staff "$APP_SUPPORT"
+fi
+
+exit 0

@@ -17,7 +17,12 @@ final class OpenRedlineHelper: NSObject, NSApplicationDelegate {
             .deletingLastPathComponent()
             .deletingLastPathComponent()
             .deletingLastPathComponent()
-        projectPath = bundleURL.deletingLastPathComponent().deletingLastPathComponent().path
+        let installedProjectPath = "/Library/Application Support/OpenRedline"
+        if FileManager.default.fileExists(atPath: installedProjectPath) {
+            projectPath = installedProjectPath
+        } else {
+            projectPath = bundleURL.deletingLastPathComponent().deletingLastPathComponent().path
+        }
         super.init()
     }
 
@@ -95,7 +100,7 @@ final class OpenRedlineHelper: NSObject, NSApplicationDelegate {
         let process = Process()
         process.currentDirectoryURL = URL(fileURLWithPath: projectPath)
         process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
-        process.arguments = ["npm", "run", "dev"]
+        process.arguments = ["node", "server.js"]
 
         let logURL = URL(fileURLWithPath: projectPath).appendingPathComponent("openredline-helper.log")
         if !FileManager.default.fileExists(atPath: logURL.path) {

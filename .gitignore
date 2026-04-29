@@ -10,6 +10,7 @@ data/
 
 npm-debug.log*
 openredline-helper.log
+dist/
 
 # Large generated originals kept locally, not needed for distribution.
 assets/openredline-logo.png
