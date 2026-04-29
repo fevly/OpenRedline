@@ -389,27 +389,26 @@ async function readSelection() {
 
 async function normalizeSelectionText() {
   if (globalThis.Word?.run) {
-    setStatus('正在规范 Word 选中文本...');
+    setStatus('正在规范 Word 选中文本，并保留脚注结构...');
     try {
-      let normalized = '';
+      let result = null;
       await Word.run(async (context) => {
         const range = context.document.getSelection();
-        range.load('text');
+        const ooxml = range.getOoxml();
         await context.sync();
-        const sourceText = range.text || '';
-        if (!sourceText.trim()) return;
-        normalized = normalizeLiteralChineseText(sourceText);
-        range.insertText(normalized, Word.InsertLocation.replace);
+        result = normalizeOoxmlText(ooxml.value);
+        if (!result.changed) return;
+        range.insertOoxml(result.ooxml, Word.InsertLocation.replace);
         await context.sync();
       });
 
-      if (!normalized) {
+      if (!result?.plainText.trim()) {
         setStatus('没有读到可规范的选中文本。', true);
         return;
       }
 
-      els.selectedText.value = normalized;
-      setStatus('已将选中文本规范为中文标点。');
+      els.selectedText.value = result.plainText;
+      setStatus(result.changed ? '已规范选中文本，并保留脚注等 Word 结构。' : '选中文本已经是规范标点。');
     } catch (error) {
       setStatus(`规范失败：${error.message}`, true);
     }
@@ -761,6 +760,36 @@ function normalizeChineseText(source) {
 function normalizeLiteralChineseText(source) {
   const protectedText = protectLiteralSegments(source);
   return restorePlaceholders(normalizeChineseText(protectedText.text), protectedText.placeholders);
+}
+
+function normalizeOoxmlText(ooxml) {
+  const parser = new DOMParser();
+  const documentXml = parser.parseFromString(ooxml, 'application/xml');
+  if (documentXml.querySelector('parsererror')) {
+    throw new Error('无法解析 Word 选区结构。');
+  }
+
+  const wordNamespace = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+  const textNodes = Array.from(documentXml.getElementsByTagNameNS(wordNamespace, 't'));
+  let changed = false;
+  const plainParts = [];
+
+  textNodes.forEach((node) => {
+    const original = node.textContent || '';
+    const normalized = normalizeLiteralChineseText(original);
+    if (normalized !== original) {
+      node.textContent = normalized;
+      changed = true;
+    }
+    plainParts.push(normalized);
+  });
+
+  const serializer = new XMLSerializer();
+  return {
+    changed,
+    plainText: plainParts.join(''),
+    ooxml: serializer.serializeToString(documentXml)
+  };
 }
 
 function protectLiteralSegments(source) {
