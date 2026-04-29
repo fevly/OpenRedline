@@ -18,15 +18,14 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.get('/assets/icon-:size.png', (req, res) => {
   const size = Number(req.params.size) || 32;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 80 80">
-    <rect x="3" y="3" width="74" height="74" rx="16" fill="#0b0e10"/>
-    <rect x="7" y="7" width="66" height="66" rx="14" fill="#15191c"/>
-    <path d="M40 21C26 21 15 32 15 45s10 23 23 24" fill="none" stroke="#f1f3f3" stroke-width="7" stroke-linecap="round"/>
-    <path d="M40 21c13 0 23 9 25 21" fill="none" stroke="#f1f3f3" stroke-width="7" stroke-linecap="round"/>
-    <path d="M40 15v50" stroke="#aeb4b6" stroke-width="4" stroke-linecap="round"/>
-    <path d="M42 19v42" stroke="#781f26" stroke-width="1.1" stroke-linecap="round"/>
-    <path d="M47 35h18L53 46l12 13H53L43 47l10-7H47z" fill="#f1f3f3"/>
-    <path d="M56 55l13 13" stroke="#f1f3f3" stroke-width="4" stroke-linecap="round"/>
-    <path d="M43 58L66 38" stroke="#781f26" stroke-width="1" opacity=".65"/>
+    <rect width="80" height="80" fill="#b8b5ae"/>
+    <path d="M24 13h26l12 12v42H24z" fill="#f7f5ef"/>
+    <path d="M50 13v13h12z" fill="#ddd9d0"/>
+    <path d="M18 22v49h42" fill="none" stroke="#202020" stroke-width="5"/>
+    <path d="M21 66L63 24" stroke="#df3a3a" stroke-width="7" stroke-linecap="square"/>
+    <path d="M52 52h11v7H52z" fill="#202020"/>
+    <path d="M54 47l5 5-5 5z" fill="#ffffff"/>
+    <path d="M62 47l-5 5 5 5z" fill="#ffffff"/>
   </svg>`;
   res.type('image/svg+xml').send(svg);
 });

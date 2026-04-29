@@ -74,46 +74,35 @@ final class OpenRedlineHelper: NSObject, NSApplicationDelegate {
 
     private func drawStatusGlyph(in rect: NSRect) {
         let ink = NSColor.black.withAlphaComponent(0.95)
-        let center = NSPoint(x: rect.midX - 1.2, y: rect.midY)
+
+        ink.setFill()
+        let page = NSBezierPath()
+        page.move(to: NSPoint(x: rect.minX + 4.1, y: rect.minY + 3.0))
+        page.line(to: NSPoint(x: rect.minX + 4.1, y: rect.maxY - 3.0))
+        page.line(to: NSPoint(x: rect.maxX - 6.2, y: rect.maxY - 3.0))
+        page.line(to: NSPoint(x: rect.maxX - 3.0, y: rect.maxY - 6.2))
+        page.line(to: NSPoint(x: rect.maxX - 3.0, y: rect.minY + 3.0))
+        page.close()
+        page.fill()
+
+        NSColor.clear.setFill()
+        NSBezierPath(rect: NSRect(x: rect.minX + 6.2, y: rect.minY + 5.2, width: 8.0, height: 9.2)).fill()
 
         ink.setStroke()
-        let openPath = NSBezierPath()
-        openPath.lineWidth = 2.2
-        openPath.lineCapStyle = .round
-        openPath.appendArc(
-            withCenter: NSPoint(x: rect.minX + 7.3, y: rect.midY),
-            radius: 5.2,
-            startAngle: 72,
-            endAngle: 292,
-            clockwise: false
-        )
-        openPath.stroke()
+        let pen = NSBezierPath()
+        pen.lineWidth = 2.0
+        pen.lineCapStyle = .square
+        pen.move(to: NSPoint(x: rect.minX + 4.1, y: rect.minY + 3.4))
+        pen.line(to: NSPoint(x: rect.maxX - 3.2, y: rect.maxY - 8.8))
+        pen.stroke()
 
-        ink.setStroke()
-        let corePath = NSBezierPath()
-        corePath.lineWidth = 1.8
-        corePath.lineCapStyle = .round
-        corePath.move(to: NSPoint(x: center.x, y: rect.minY + 3.1))
-        corePath.line(to: NSPoint(x: center.x, y: rect.maxY - 3.1))
-        corePath.stroke()
-
-        ink.setStroke()
-        let rPath = NSBezierPath()
-        rPath.lineWidth = 2.0
-        rPath.lineJoinStyle = .miter
-        rPath.lineCapStyle = .square
-        rPath.move(to: NSPoint(x: rect.minX + 9.8, y: rect.midY + 3.0))
-        rPath.line(to: NSPoint(x: rect.maxX - 3.2, y: rect.midY + 3.0))
-        rPath.line(to: NSPoint(x: rect.minX + 11.9, y: rect.midY - 0.4))
-        rPath.line(to: NSPoint(x: rect.maxX - 3.4, y: rect.minY + 2.7))
-        rPath.stroke()
-
-        let slash = NSBezierPath()
-        slash.lineWidth = 1.2
-        slash.lineCapStyle = .round
-        slash.move(to: NSPoint(x: rect.maxX - 6.4, y: rect.minY + 4.3))
-        slash.line(to: NSPoint(x: rect.maxX - 2.2, y: rect.minY + 1.8))
-        slash.stroke()
+        let mark = NSBezierPath()
+        mark.lineWidth = 1.0
+        mark.move(to: NSPoint(x: rect.maxX - 7.0, y: rect.minY + 6.0))
+        mark.line(to: NSPoint(x: rect.maxX - 3.0, y: rect.minY + 6.0))
+        mark.move(to: NSPoint(x: rect.maxX - 5.0, y: rect.minY + 4.0))
+        mark.line(to: NSPoint(x: rect.maxX - 5.0, y: rect.minY + 8.0))
+        mark.stroke()
     }
 
     private func refreshStatus() {
