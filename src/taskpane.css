@@ -8,6 +8,7 @@
   --panel-strong: rgba(255, 255, 255, 0.86);
   --accent: #0f4f3f;
   --accent-deep: #0a3a30;
+  --apple-blue: #0071e3;
   --accent-ink: #ffffff;
   --danger: #b42318;
   --danger-soft: rgba(180, 35, 24, 0.1);
@@ -159,8 +160,16 @@ textarea {
 
 .selectionButton {
   min-width: 80px;
+  border-color: var(--apple-blue);
+  background: rgba(255, 255, 255, 0.56);
+  color: var(--apple-blue);
+  box-shadow: var(--inner-light), 0 8px 18px rgba(0, 113, 227, 0.1);
   padding: 0 12px;
   white-space: nowrap;
+}
+
+.selectionButton:focus-visible {
+  outline-color: rgba(0, 113, 227, 0.26);
 }
 
 .panel,
