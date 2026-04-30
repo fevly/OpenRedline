@@ -22,6 +22,7 @@ const temporaryPrompt = {
   text: ''
 };
 const temporaryPromptValue = 'temporary';
+const newPromptValue = 'new';
 
 const defaultModelConfigs = [
   {
@@ -58,6 +59,7 @@ const state = {
   modelConfigs: normalizeModelConfigs(loadJson('word-ai-reviser.modelConfigs', defaultModelConfigs)),
   selectedPromptIndex: 0,
   temporaryPromptText: '',
+  newPromptDraft: { name: '', text: '' },
   normalizeChinese: loadJson('word-ai-reviser.normalizeChinese', true)
 };
 
@@ -192,6 +194,13 @@ function bindEvents() {
   els.promptText.addEventListener('input', () => {
     if (state.selectedPromptIndex === temporaryPromptValue) {
       state.temporaryPromptText = els.promptText.value;
+    } else if (state.selectedPromptIndex === newPromptValue) {
+      state.newPromptDraft.text = els.promptText.value;
+    }
+  });
+  els.promptName.addEventListener('input', () => {
+    if (state.selectedPromptIndex === newPromptValue) {
+      state.newPromptDraft.name = els.promptName.value;
     }
   });
   els.addPrompt.addEventListener('click', addPrompt);
@@ -239,13 +248,21 @@ function renderPrompts() {
   temporaryOption.value = temporaryPromptValue;
   temporaryOption.textContent = temporaryPrompt.name;
   els.promptSelect.append(temporaryOption);
+  if (state.selectedPromptIndex === newPromptValue) {
+    const newOption = document.createElement('option');
+    newOption.value = newPromptValue;
+    newOption.textContent = '新建 Prompt（未保存）';
+    els.promptSelect.append(newOption);
+  }
   state.prompts.forEach((prompt, index) => {
     const option = document.createElement('option');
     option.value = String(index);
     option.textContent = prompt.name;
     els.promptSelect.append(option);
   });
-  els.promptSelect.value = state.selectedPromptIndex === temporaryPromptValue ? temporaryPromptValue : String(state.selectedPromptIndex);
+  els.promptSelect.value = typeof state.selectedPromptIndex === 'string'
+    ? state.selectedPromptIndex
+    : String(state.selectedPromptIndex);
   fillPromptEditor();
 }
 
@@ -254,22 +271,23 @@ function fillPromptEditor() {
   els.promptName.value = prompt?.name || '';
   els.promptText.value = prompt?.text || '';
   const isTemporary = state.selectedPromptIndex === temporaryPromptValue;
+  const isNewPrompt = state.selectedPromptIndex === newPromptValue;
   document.body.classList.toggle('temporaryPromptMode', isTemporary);
-  els.promptText.placeholder = isTemporary ? '输入本次临时使用的 Prompt，不会保存。' : '';
+  els.promptText.placeholder = isTemporary
+    ? '输入本次临时使用的 Prompt，不会保存。'
+    : isNewPrompt
+      ? '输入新 Prompt 内容，点击保存后才会加入列表。'
+      : '';
   els.promptName.disabled = isTemporary;
   els.savePrompt.disabled = isTemporary;
-  els.deletePrompt.disabled = isTemporary;
+  els.deletePrompt.disabled = isTemporary || isNewPrompt;
 }
 
-async function addPrompt() {
-  const nextIndex = state.prompts.length + 1;
-  state.prompts.push({
-    name: `自定义 Prompt ${nextIndex}`,
-    text: ''
-  });
-  state.selectedPromptIndex = state.prompts.length - 1;
+function addPrompt() {
+  state.newPromptDraft = { name: '', text: '' };
+  state.selectedPromptIndex = newPromptValue;
   renderPrompts();
-  await persistSettings('Prompt 已新增并同步。');
+  setStatus('请填写新 Prompt，保存后会同步到 Word。');
 }
 
 function renderModels() {
@@ -448,6 +466,7 @@ async function savePrompt() {
     state.prompts.push({ name, text });
     state.selectedPromptIndex = state.prompts.length - 1;
   }
+  state.newPromptDraft = { name: '', text: '' };
 
   renderPrompts();
   await persistSettings('Prompt 已保存并同步。');
@@ -880,6 +899,9 @@ function getSelectedPrompt() {
       ...temporaryPrompt,
       text: state.temporaryPromptText
     };
+  }
+  if (state.selectedPromptIndex === newPromptValue) {
+    return state.newPromptDraft;
   }
   return state.prompts[state.selectedPromptIndex] || state.prompts[0];
 }

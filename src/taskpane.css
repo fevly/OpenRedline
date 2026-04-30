@@ -139,6 +139,17 @@ textarea {
   color: var(--muted);
 }
 
+.configNotice {
+  border: 1px solid rgba(0, 113, 227, 0.22);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.64);
+  color: var(--muted);
+  box-shadow: var(--inner-light), 0 8px 18px rgba(0, 113, 227, 0.08);
+  padding: 9px 11px;
+  font-size: 13px;
+  font-weight: 650;
+}
+
 .topActions {
   flex: 1 1 150px;
   display: flex;
