@@ -4,6 +4,12 @@ OpenRedline 是一个给 Microsoft Word 使用的 AI 文本修订插件。
 
 它可以读取 Word 中选中的文字，用你配置的 AI 模型进行纠错、改写、翻译或自定义处理，并把满意的结果插回 Word。
 
+## 下载
+
+最新版安装包请到 GitHub Releases 下载：
+
+[下载 OpenRedline 最新版本](https://github.com/fevly/OpenRedline/releases/latest)
+
 ## 主要功能
 
 - 读取 Word 当前选中的文本
