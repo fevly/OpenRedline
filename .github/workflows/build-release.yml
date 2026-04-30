@@ -6,6 +6,9 @@ on:
     tags:
       - "v*"
 
+permissions:
+  contents: write
+
 jobs:
   mac:
     name: macOS PKG
@@ -59,3 +62,26 @@ jobs:
         with:
           name: OpenRedline-windows-preview
           path: dist/OpenRedline-windows-preview.exe
+
+  release:
+    name: GitHub Release
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-24.04
+    needs:
+      - mac
+      - windows
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG_NAME" \
+            release-assets/OpenRedline-mac-preview/OpenRedline-mac-preview.pkg \
+            release-assets/OpenRedline-windows-preview/OpenRedline-windows-preview.exe \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "OpenRedline $TAG_NAME" \
+            --notes "Preview release for OpenRedline. Download the macOS PKG or Windows EXE installer below."
